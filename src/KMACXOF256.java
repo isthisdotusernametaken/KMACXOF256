@@ -2,9 +2,31 @@ import java.math.BigInteger;
 
 public class KMACXOF256 {
 
-    static void rightEncode(final BigInteger x) {
-        final byte[] bytes = x.toByteArray();
-        reverseByteEndianness(bytes);
+    static byte[] bytepad(final byte[] X, final BigInteger w) {
+        byte[] z = Util.concatenate(leftEncode(w.toByteArray()), X);
+
+    }
+
+    static byte[] encodeString(final byte[] S) {
+        return Util.concatenate(leftEncode(BigInteger.valueOf(S.length).toByteArray()), S);
+    }
+
+    static byte[] rightEncode(final byte[] bytes) {
+        return encodeLeftOrRight(bytes, false);
+    }
+
+    static byte[] leftEncode(final byte[] bytes) {
+        return encodeLeftOrRight(bytes, true);
+    }
+
+    private static byte[] encodeLeftOrRight(final byte[] bytesOfX, final boolean prependLength) {
+        reverseByteEndianness(bytesOfX);
+
+        final byte[] bytesOfO = new byte[bytesOfX.length + 1];
+        System.arraycopy(bytesOfX, 0, bytesOfO, prependLength ? 1 : 0, bytesOfX.length);
+        bytesOfO[prependLength ? 0 : bytesOfO.length - 1] = enc8((byte) bytesOfX.length);
+
+        return bytesOfO;
     }
 
     private static void reverseByteEndianness(final byte[] bytes) {
