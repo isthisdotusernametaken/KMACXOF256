@@ -2,13 +2,38 @@ import java.math.BigInteger;
 
 public class KMACXOF256 {
 
-    static byte[] bytepad(final byte[] X, final BigInteger w) {
-        byte[] z = Util.concatenate(leftEncode(w.toByteArray()), X);
+//    static byte[] cSHAKE256(final byte[] X, final int L, final byte[] N, final byte[] S) {
+//        if (N.length == 0 && S.length == 0)
+//            return SHAKE256(X, L);
+//
+//        return Keccak.Keccak512(
+//                new BigInteger(Util.cat(
+//                        bytepad(
+//                                Util.cat(encodeString(N), encodeString(S)),
+//                                136
+//                        ),
+//                        X
+//                )).shiftLeft(2).toByteArray(),
+//                L
+//        );
+//    }
 
+    static byte[] bytepad(final byte[] X, final int w) {
+        BigInteger z = new BigInteger(Util.cat(
+                leftEncode(BigInteger.valueOf(w).toByteArray()),
+                X
+        ));
+
+        while (z.bitLength() % 8 != 0)
+            z = z.shiftLeft(1);
+        while ((z.bitLength() / 8) % w != 0)
+            z = z.shiftLeft(8);
+
+        return z.toByteArray();
     }
 
     static byte[] encodeString(final byte[] S) {
-        return Util.concatenate(leftEncode(BigInteger.valueOf(S.length).toByteArray()), S);
+        return Util.cat(leftEncode(BigInteger.valueOf(S.length).toByteArray()), S);
     }
 
     static byte[] rightEncode(final byte[] bytes) {
@@ -20,11 +45,11 @@ public class KMACXOF256 {
     }
 
     private static byte[] encodeLeftOrRight(final byte[] bytesOfX, final boolean prependLength) {
-        reverseByteEndianness(bytesOfX);
+        //reverseByteEndianness(bytesOfX);
 
         final byte[] bytesOfO = new byte[bytesOfX.length + 1];
         System.arraycopy(bytesOfX, 0, bytesOfO, prependLength ? 1 : 0, bytesOfX.length);
-        bytesOfO[prependLength ? 0 : bytesOfO.length - 1] = enc8((byte) bytesOfX.length);
+        bytesOfO[prependLength ? 0 : bytesOfO.length - 1] = (byte) bytesOfX.length; // enc8((byte) bytesOfX.length);
 
         return bytesOfO;
     }
