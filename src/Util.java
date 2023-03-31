@@ -1,5 +1,5 @@
 public class Util {
-    public static byte[] ASCIIStringToBytes(final String ASCII) {
+    static byte[] ASCIIStringToBytes(final String ASCII) {
         var chars = ASCII.toCharArray();
         var bytes = new byte[chars.length];
 
@@ -9,7 +9,7 @@ public class Util {
         return bytes;
     }
 
-    public static byte[] cat(final byte[] leftBytes, final byte[] rightBytes) {
+    static byte[] cat(final byte[] leftBytes, final byte[] rightBytes) {
         final byte[] result = new byte[leftBytes.length + rightBytes.length];
 
         System.arraycopy(leftBytes, 0, result, 0, leftBytes.length);
@@ -18,7 +18,7 @@ public class Util {
         return result;
     }
 
-    public static byte[] cat(final byte[] bytes, final byte newByte, final boolean prepend) {
+    static byte[] cat(final byte[] bytes, final byte newByte, final boolean prepend) {
         final byte[] result = new byte[bytes.length + 1];
 
         System.arraycopy(result, 0, bytes, prepend ? 1 : 0, bytes.length);
