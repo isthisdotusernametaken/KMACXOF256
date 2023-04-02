@@ -49,7 +49,7 @@ public class KMACXOF256 {
 
         final byte[] bytesOfO = new byte[bytesOfX.length + 1];
         System.arraycopy(bytesOfX, 0, bytesOfO, prependLength ? 1 : 0, bytesOfX.length);
-        bytesOfO[prependLength ? 0 : bytesOfO.length - 1] = (byte) bytesOfX.length; // enc8((byte) bytesOfX.length);
+        bytesOfO[prependLength ? 0 : bytesOfO.length - 1] = enc8((byte) bytesOfX.length);
 
         return bytesOfO;
     }

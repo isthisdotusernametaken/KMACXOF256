@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Util {
     static byte[] ASCIIStringToBytes(final String ASCII) {
         var chars = ASCII.toCharArray();
@@ -25,15 +27,6 @@ public class Util {
             System.arraycopy(ba, 0, result, cursor, ba.length);
             cursor +=  ba.length;
         }
-        return result;
-    }
-
-    static byte[] cat(final byte[] leftBytes, final byte[] rightBytes) {
-        final byte[] result = new byte[leftBytes.length + rightBytes.length];
-
-        System.arraycopy(leftBytes, 0, result, 0, leftBytes.length);
-        System.arraycopy(rightBytes, 0, result, leftBytes.length, rightBytes.length);
-
         return result;
     }
 
