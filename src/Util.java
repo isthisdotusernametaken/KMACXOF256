@@ -22,7 +22,7 @@ public class Util {
         final byte[] result = new byte[resSize];
         int cursor = 0;
         for (byte[] ba: sourceArrays) {
-            System.arraycopy(ba,0,result,cursor,ba.length);
+            System.arraycopy(ba, 0, result, cursor, ba.length);
             cursor +=  ba.length;
         }
         return result;
