@@ -19,17 +19,13 @@ public class KMACXOF256 {
 //    }
 
     static byte[] bytepad(final byte[] X, final int w) {
-        BigInteger z = new BigInteger(Util.cat(
-                leftEncode(BigInteger.valueOf(w).toByteArray()),
-                X
-        ));
+        final byte[] leftEncodedW = leftEncode(BigInteger.valueOf(w).toByteArray());
+        final byte[] z = new byte[((leftEncodedW.length + X.length + (w - 1)) / w) * w];
 
-        while (z.bitLength() % 8 != 0)
-            z = z.shiftLeft(1);
-        while ((z.bitLength() / 8) % w != 0)
-            z = z.shiftLeft(8);
+        System.arraycopy(leftEncodedW, 0, z, 0, leftEncodedW.length);
+        System.arraycopy(X, 0, z, leftEncodedW.length, X.length);
 
-        return z.toByteArray();
+        return z;
     }
 
     static byte[] encodeString(final byte[] S) {
