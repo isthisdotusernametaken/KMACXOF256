@@ -45,7 +45,7 @@ public class KMACXOF256 {
     }
 
     private static byte[] encodeLeftOrRight(final byte[] bytesOfX, final boolean prependLength) {
-        //reverseByteEndianness(bytesOfX);
+        reverseByteEndianness(bytesOfX);
 
         final byte[] bytesOfO = new byte[bytesOfX.length + 1];
         System.arraycopy(bytesOfX, 0, bytesOfO, prependLength ? 1 : 0, bytesOfX.length);
