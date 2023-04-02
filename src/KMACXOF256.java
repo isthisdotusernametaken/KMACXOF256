@@ -18,6 +18,19 @@ public class KMACXOF256 {
 //        );
 //    }
 
+    /**
+     * Function that does all the work, probably.
+     * @param K key bit string.
+     * @param X main input bit string.
+     * @param L integer representing desired output length in bits.
+     * @param S optional customization bitstring, if no customization desired, S is empty string.
+     * @return result of math.
+     */
+    static byte[] runKMACXOF256(final byte[] K, final byte[] X, final int L, final byte[] S) {
+        byte[] newX = Util.cat(bytepad(encodeString(K), 136), X, rightEncode(new byte[]{0}));
+        return newX; //TODO swap to returning cSHAKE256(newXm L, "KMAC", S);
+    }
+
     static byte[] bytepad(final byte[] X, final int w) {
         final byte[] leftEncodedW = leftEncode(BigInteger.valueOf(w).toByteArray());
         final byte[] z = new byte[((leftEncodedW.length + X.length + (w - 1)) / w) * w];
