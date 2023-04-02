@@ -1,0 +1,1 @@
+public record SymmetricCryptogram(byte[] z, byte[] c, byte[] t) {}
