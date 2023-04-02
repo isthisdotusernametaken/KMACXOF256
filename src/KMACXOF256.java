@@ -24,6 +24,8 @@ public class KMACXOF256 {
 
         System.arraycopy(leftEncodedW, 0, z, 0, leftEncodedW.length);
         System.arraycopy(X, 0, z, leftEncodedW.length, X.length);
+        // The final values to the right are already initialized to 0 by default,
+        // handling the 0 padding the formal description in NIST SP 800-815 includes
 
         return z;
     }
