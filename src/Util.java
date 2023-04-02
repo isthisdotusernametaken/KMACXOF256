@@ -1,6 +1,9 @@
-import java.util.Arrays;
-
 public class Util {
+
+    private static final char[] HEX_CHARS = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+    };
+
     static byte[] ASCIIStringToBytes(final String ASCII) {
         var chars = ASCII.toCharArray();
         var bytes = new byte[chars.length];
@@ -9,6 +12,18 @@ public class Util {
             bytes[i] = (byte) chars[i];
 
         return bytes;
+    }
+
+    static String bytesToByteSpacedHexString(final byte[] bytes) {
+        var builder = new StringBuilder();
+
+        for (byte b : bytes)
+            builder.append(HEX_CHARS[(b >>> 4) & 0x0F]).append(HEX_CHARS[b & 0x0F])
+                   .append(' ');
+
+        return bytes.length == 0 ?
+               "" :
+               builder.deleteCharAt(builder.length() - 1).toString();
     }
 
     /**
