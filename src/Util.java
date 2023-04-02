@@ -9,6 +9,25 @@ public class Util {
         return bytes;
     }
 
+    /**
+     * Byte array concat for variable amounts of byte arrays.
+     * @param sourceArrays array of source byte arrays.
+     * @return single byte array from concat of source arrays.
+     */
+    static byte[] cat(final byte[]... sourceArrays) {
+        int resSize = 0;
+        for (byte[] ba: sourceArrays) {
+            resSize += ba.length;
+        }
+        final byte[] result = new byte[resSize];
+        int cursor = 0;
+        for (byte[] ba: sourceArrays) {
+            System.arraycopy(ba,0,result,cursor,ba.length);
+            cursor +=  ba.length;
+        }
+        return result;
+    }
+
     static byte[] cat(final byte[] leftBytes, final byte[] rightBytes) {
         final byte[] result = new byte[leftBytes.length + rightBytes.length];
 
