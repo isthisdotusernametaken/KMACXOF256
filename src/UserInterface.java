@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -48,7 +49,7 @@ public class UserInterface {
     /* Other Stuff. */
 
     /** User input. */
-    private static final Scanner TEIN = new Scanner(System.in);
+    private static Scanner TEIN = new Scanner(System.in);
 
     /** Menu location. */
     private static String iCurrentMenu;
@@ -74,7 +75,7 @@ public class UserInterface {
             System.out.println(iCurrentMenu);
             System.out.println(MENU_INPUT_PROMPT);
 
-            String rawInput = TEIN.nextLine();
+            String rawInput = safeNextLine();
             clearScreen(); //TODO only usage of clearScreen(), if (not) desired.
             choice = parseMenuInput(rawInput);
 
@@ -134,7 +135,7 @@ public class UserInterface {
         //say hello, get input.
         System.out.println(HASH_MENU.substring(0, 28));
         System.out.println(FILE_INPUT_PROMPT);
-        String rawInput = TEIN.nextLine();
+        String rawInput = safeNextLine();
 
         //do work.
         byte[] fileContent = new byte[0];
@@ -171,7 +172,7 @@ public class UserInterface {
         //say hello, get input.
         System.out.println(HASH_MENU.substring(0, 28));
         System.out.println(TEXT_INPUT_PROMPT);
-        String rawInput = TEIN.nextLine();
+        String rawInput = safeNextLine();
 
         //do work.
         byte[] byteInput = Util.ASCIIStringToBytes(rawInput);
@@ -203,7 +204,7 @@ public class UserInterface {
     static void authFromFile() {
         System.out.println(AUTH_MENU.substring(0, 34));
         System.out.println(FILE_INPUT_PROMPT);
-        String rawInput = TEIN.nextLine();
+        String rawInput = safeNextLine();
         //do stuff
         iCurrentMenu = MAIN_MENU;
     }
@@ -215,7 +216,7 @@ public class UserInterface {
     static void authFromInput() {
         System.out.println(AUTH_MENU.substring(0, 34));
         System.out.println(TEXT_INPUT_PROMPT);
-        String rawInput = TEIN.nextLine();
+        String rawInput = safeNextLine();
         //do stuff
         iCurrentMenu = MAIN_MENU;
     }
@@ -226,7 +227,7 @@ public class UserInterface {
     static void encryptMenuHandler() {
         System.out.println(ENCRYPT_MENU);
         System.out.println(FILE_INPUT_PROMPT);
-        String rawInput = TEIN.nextLine();
+        String rawInput = safeNextLine();
         //do stuff
         iCurrentMenu = MAIN_MENU;
     }
@@ -239,7 +240,7 @@ public class UserInterface {
     static void decryptMenuHandler() {
         System.out.println(DECRYPT_MENU);
         System.out.println(FILE_INPUT_PROMPT);
-        String rawInput = TEIN.nextLine();
+        String rawInput = safeNextLine();
 
         //do stuff
         byte[] byteInput = Util.ASCIIStringToBytes(rawInput);
@@ -330,6 +331,16 @@ public class UserInterface {
                 }
             } catch (Exception ignored) {
                 //empty on purpose.
+            }
+        }
+    }
+
+    private static String safeNextLine() {
+        while (true) {
+            try {
+                return TEIN.nextLine();
+            } catch (NoSuchElementException e) {
+                TEIN = new Scanner(System.in);
             }
         }
     }
