@@ -31,6 +31,11 @@ public class Keccak {
 
         for (int i = 0; i < 24; i++) {
             theta(state, bc);
+
+for (long n:state) {
+    System.out.print(Long.toHexString(n)+':');
+}System.out.println('\n');
+
             rhoAndPi(state, bc);
             chi(state, bc);
             iota(state, i);

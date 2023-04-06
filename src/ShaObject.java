@@ -2,100 +2,10 @@ import java.util.Arrays;
 
 public class ShaObject {
 
-    /*public static class stInner {
-        public byte[] b = new byte[200];
-        public long[] q = new long[25];
-    }
-    public stInner st;*/
-
     public StateArray sa = new StateArray();
     public int pt;
     public int rsiz;
     public int mdlen;
-
-// update the state with given number of rounds
-
-    private static final long[] keccakFRNDC = {
-            0x0000000000000001L, 0x0000000000008082L, 0x800000000000808aL,
-            0x8000000080008000L, 0x000000000000808bL, 0x0000000080000001L,
-            0x8000000080008081L, 0x8000000000008009L, 0x000000000000008aL,
-            0x0000000000000088L, 0x0000000080008009L, 0x000000008000000aL,
-            0x000000008000808bL, 0x800000000000008bL, 0x8000000000008089L,
-            0x8000000000008003L, 0x8000000000008002L, 0x8000000000000080L,
-            0x000000000000800aL, 0x800000008000000aL, 0x8000000080008081L,
-            0x8000000000008080L, 0x0000000080000001L, 0x8000000080008008L
-    };
-
-    private static final int[] keccakFROTC = {
-            1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14,
-            27, 41, 56, 8, 25, 43, 62, 18, 39, 61, 20, 44
-    };
-
-    private static final int[] keccakFPILN = {
-            10, 7, 11, 17, 18, 3, 5, 16, 8, 21, 24, 4,
-            15, 23, 19, 13, 12, 2, 20, 14, 22, 9, 6, 1
-    };
-
-    static void keccakF(final long[] state) {
-        // state must be of length 25
-
-        long[] bc = new long[5];
-
-        for (int i = 0; i < 24; i++) {
-            theta(state, bc);
-            rhoAndPi(state, bc);
-            chi(state, bc);
-            iota(state, i);
-        }
-    }
-
-    private static void theta(final long[] state, final long[] bc) {
-        for (int i = 0; i < 5; i++)
-            bc[i] = state[i] ^ state[i + 5] ^ state[i + 10] ^ state[i + 15] ^ state[i + 20];
-
-        long t;
-        for (int i = 0; i < 5; i++) {
-            t = bc[(i + 4) % 5] ^ ROTL64(bc[(i + 1) % 5], 1);
-
-            for (int j = 0; j < 25; j += 5)
-                state[i + j] ^= t;
-        }
-    }
-
-    private static void rhoAndPi(final long[] state, final long[] bc) {
-        long t = state[1];
-        for (int i = 0, j; i < 24; i++) {
-            j = keccakFPILN[i];
-            bc[0] = state[j];
-            state[j] = ROTL64(t, keccakFROTC[i]);
-
-            t = bc[0];
-        }
-    }
-
-    private static void chi(final long[] state, final long[] bc) {
-//        for (int i = 0; i < 25; i += 5) {
-//            for (int j = 0; j < 5; j++)
-//                bc[j] = state[i + j];
-//            for (int j = 0; j < 5; j++)
-//                state[i + j] ^= ~bc[(i + 1) % 5] & bc[(i + 2) % 5];
-//        }
-
-        for (int j = 0; j < 25; j += 5) {
-            for (int i = 0; i < 5; i++)
-                bc[i] = state[j + i];
-            for (int i = 0; i < 5; i++)
-                state[j + i] ^= (~bc[(i + 1) % 5]) & bc[(i + 2) % 5];
-        }
-    }
-
-    private static void iota(final long[] state, final int iteration) {
-        state[0] ^= keccakFRNDC[iteration];
-    }
-
-    private static long ROTL64(final long x, final long y) {
-        return (x << y) | (x >> (64 - y));
-    }
 
     // TODO - Add SHAKE256
     // TODO - Determine meanings of variable names and give new descriptive names
@@ -127,7 +37,7 @@ public class ShaObject {
             this.sa.set8XOR(j++,data[i]);
 
             if (j >= this.rsiz) {
-                keccakF(this.sa.getArray());
+                Keccak.keccakF(this.sa.getArray());
                 j = 0;
             }
         }
@@ -140,7 +50,7 @@ public class ShaObject {
 
         this.sa.set8XOR(this.pt, (byte) 0x06);
         this.sa.set8XOR(this.rsiz-1, (byte) 0x80);
-        keccakF(this.sa.getArray());
+        Keccak.keccakF(this.sa.getArray());
 
         for (i = 0; i < this.mdlen; i++) {
             md[i] = this.sa.get8(i);
@@ -151,7 +61,13 @@ public class ShaObject {
     void shake_xof() {
         this.sa.set8XOR(this.pt, (byte) 0x1F);
         this.sa.set8XOR(this.rsiz-1, (byte) 0x80);
-        keccakF(this.sa.getArray());
+
+        Keccak.keccakF(this.sa.getArray());
+
+for (long num:this.sa.getArray()) {
+    System.out.print(Long.toHexString(num)+':');
+} System.out.print("\nXOF1\n");
+
         this.pt = 0;
     }
 
@@ -161,7 +77,7 @@ public class ShaObject {
         j = this.pt;
         for (int i = 0; i < len; i++) {
             if (j >= this.rsiz) {
-                keccakF(this.sa.getArray());
+                Keccak.keccakF(this.sa.getArray());
                 j = 0;
             }
             out[i] = this.sa.get8(j++);
@@ -196,18 +112,33 @@ public class ShaObject {
 
             sha3.shake256_init();
 
+for (long num:sha3.sa.getArray()) {
+    System.out.print(Long.toHexString(num)+':');
+} System.out.print("\n0's complete\n");
+
             if (i >= 1) {                   // 1600-bit test pattern
-                Arrays.fill(buf,0,20, (byte) 0b10100011);
+                Arrays.fill(buf, 0, 20, (byte) 0b10100011);
                 //memset(buf, 0xA3, 20);
                 for (int j = 0; j < 200; j += 20)
-                    sha3.shake_update(buf,20);
+                    sha3.shake_update(buf, 20);
             }
 
+for (long num:sha3.sa.getArray()) {
+    System.out.print(Long.toHexString(num)+':');
+} System.out.print("\nAfter message added\n");
+
             sha3.shake_xof();
+
+for (long num:sha3.sa.getArray()) {
+    System.out.print(Long.toHexString(num)+':');
+} System.out.print("\nAfter shakexof\n");
 
             for (int j = 0; j < 512; j += 32)   // output. discard bytes 0..479
                 sha3.shake_out(buf,32);
 
+for (long num:sha3.sa.getArray()) {
+    System.out.print(Long.toHexString(num)+':');
+} System.out.print("\nAfter shakeout\n");
 
             UserInterface.printByteArrayAsHex(buf);
             boolean flip = true;
