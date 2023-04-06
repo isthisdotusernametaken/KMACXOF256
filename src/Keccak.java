@@ -39,7 +39,7 @@ public class Keccak {
 
     private static void theta(final long[] state, final long[] bc) {
         for (int i = 0; i < 5; i++)
-            bc[i] = state[i] ^ state[i + 5] ^ state[i + 15] ^ state[i + 20];
+            bc[i] = state[i] ^ state[i + 5] ^ state[i + 10] ^ state[i + 15] ^ state[i + 20];
 
         long t;
         for (int i = 0; i < 5; i++) {
@@ -64,9 +64,9 @@ public class Keccak {
     private static void chi(final long[] state, final long[] bc) {
         for (int i = 0; i < 25; i += 5) {
             for (int j = 0; j < 5; j++)
-                bc[i] = state[i + j];
+                bc[j] = state[i + j];
             for (int j = 0; j < 5; j++)
-                state[i + j] ^= ~bc[(i + 1) % 5] & bc[(i + 2) % 5];
+                state[i + j] ^= ~bc[(j + 1) % 5] & bc[(j + 2) % 5];
         }
     }
 
