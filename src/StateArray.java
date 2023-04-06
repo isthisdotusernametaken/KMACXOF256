@@ -78,4 +78,8 @@ public class StateArray {
     void set64(final int index64, final long value) {
         state[index64] = value;
     }
+
+    void set64XOR(final int index64, final long value) {
+        state[index64] ^= value;
+    }
 }
