@@ -25,7 +25,7 @@ public class Keccak {
 
     // TODO - Determine meanings of variable names and give new descriptive names
     static void keccakF(final long[] state) {
-        // state must be of length 24
+        // state must be of length 25
 
         long[] bc = new long[5];
 
