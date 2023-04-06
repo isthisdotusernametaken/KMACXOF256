@@ -67,6 +67,10 @@ public class StateArray {
         }
     }
 
+    void set8XOR(final int index8, final byte value) {
+        set8(index8, (byte) (get8(index8) ^ value));
+    }
+
     long get64(final int index64) {
         return state[index64];
     }
