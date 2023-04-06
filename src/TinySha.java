@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class TinySha {
 
 // sha3.c
@@ -88,6 +90,58 @@ public class TinySha {
 
 // Initialize the context for SHA3
 
+//    public static void main(String[] args) {
+//        String[] testhex = {
+//                // SHAKE128, message of length 0
+//                "43E41B45A653F2A5C4492C1ADD544512DDA2529833462B71A41A45BE97290B6F",
+//                // SHAKE256, message of length 0
+//                "AB0BAE316339894304E35877B0C28A9B1FD166C796B9CC258A064A8F57E27F2A",
+//                // SHAKE128, 1600-bit test pattern
+//                "44C9FB359FD56AC0A9A75A743CFF6862F17D7259AB075216C0699511643B6439",
+//                // SHAKE256, 1600-bit test pattern
+//                "6A1A9D7846436E4DCA5728B6F760EEF0CA92BF0BE5615E96959D767197A0BEEB"
+//        };
+//
+//        int i, j, fails;
+//        sha3_ctx_t sha3 = new sha3_ctx_t();
+//        byte[] buf = new byte[32];
+//        byte[] ref = new byte[32];
+//
+//        fails = 0;
+//
+//        for (i = 0; i < 4; i++) {
+//
+//            shake256_init(sha3);
+//
+//            if (i >= 2) {                   // 1600-bit test pattern
+//                memset(buf, 0xA3, 20);
+//                for (j = 0; j < 200; j += 20)
+//                    shake_update(sha3, buf, 20);
+//            }
+//
+//            shake_xof(sha3);               // switch to extensible output
+//
+//            for (j = 0; j < 512; j += 32)   // output. discard bytes 0..479
+//                shake_out(sha3, buf, 32);
+//
+//            // compare to reference
+//            test_readhex(ref, testhex[i], ref.length);
+//            if (Arrays.compare(buf,ref) != 0) {
+//                System.out.printf("[%d] SHAKE%d, len %d test FAILED.\n",
+//                        i, i & 1 ? 256 : 128, i >= 2 ? 1600 : 0);
+//                fails++;
+//            }
+//        }
+//    }
+
+    void shake256_init(sha3_ctx_t c) {
+        sha3_init(c,32);
+    }
+
+    void shake_update(sha3_ctx_t c, byte[] data, int len) {
+        sha3_update(c, data, len);
+    }
+
     int sha3_init(sha3_ctx_t c, int mdlen)
     {
         int i;
@@ -150,6 +204,26 @@ public class TinySha {
         return md;
     }
 
+    /**
+     * cshake
+     * @param in
+     * @param inlen
+     * @param md
+     * @param mdlen
+     * @return
+     */
+    byte[] shake3(byte[] in, int inlen, byte[] md, int mdlen)
+    {
+        sha3_ctx_t sha3o = new sha3_ctx_t();
+
+        shake256_init(sha3o);
+        shake_update(sha3o, in, inlen);
+        shake_xof(sha3o);
+        shake_out(sha3o,in,32);
+
+        return md;
+    }
+
 // SHAKE128 and SHAKE256 extensible-output functionality
 
     void shake_xof(sha3_ctx_t c)
@@ -175,8 +249,8 @@ public class TinySha {
         c.pt = j;
     }
 
-    public class  sha3_ctx_t {
-        public class stInner {
+    public static class  sha3_ctx_t {
+        public static class stInner {
             public byte[] b = new byte[200];
             public long[] q = new long[25];
         }
