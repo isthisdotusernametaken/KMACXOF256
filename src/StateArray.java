@@ -31,38 +31,39 @@ public class StateArray {
     void set8(final int index8, final byte value) {
         int index64 = index8 / 8;
 
+        long valueAsLong = ((long) value) & KEEP_LAST_BYTE;
         switch (index8 % 8) {
             case 7 -> {
                 state[index64] &= ZERO_BYTE_7;
-                state[index64] |= value;
+                state[index64] |= valueAsLong;
             }
             case 6 -> {
                 state[index64] &= ZERO_BYTE_6;
-                state[index64] |= (((long) value) << 8);
+                state[index64] |= (valueAsLong << 8);
             }
             case 5 -> {
                 state[index64] &= ZERO_BYTE_5;
-                state[index64] |= (((long) value) << 16);
+                state[index64] |= (valueAsLong << 16);
             }
             case 4 -> {
                 state[index64] &= ZERO_BYTE_4;
-                state[index64] |= (((long) value) << 24);
+                state[index64] |= (valueAsLong << 24);
             }
             case 3 -> {
                 state[index64] &= ZERO_BYTE_3;
-                state[index64] |= (((long) value) << 32);
+                state[index64] |= (valueAsLong << 32);
             }
             case 2 -> {
                 state[index64] &= ZERO_BYTE_2;
-                state[index64] |= (((long) value) << 40);
+                state[index64] |= (valueAsLong << 40);
             }
             case 1 -> {
                 state[index64] &= ZERO_BYTE_1;
-                state[index64] |= (((long) value) << 48);
+                state[index64] |= (valueAsLong << 48);
             }
             default -> { // Always 0 in this case
                 state[index64] &= ZERO_BYTE_0;
-                state[index64] |= (((long) value) << 56);
+                state[index64] |= (valueAsLong << 56);
             }
         }
     }
@@ -77,10 +78,6 @@ public class StateArray {
 
     void set64(final int index64, final long value) {
         state[index64] = value;
-    }
-
-    void set64XOR(final int index64, final long value) {
-        state[index64] ^= value;
     }
 
     long[] getArray() {
