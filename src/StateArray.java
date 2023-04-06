@@ -11,11 +11,7 @@ public class StateArray {
     private static final long ZERO_BYTE_1 = 0xFF00_FFFF_FFFF_FFFFL;
     private static final long ZERO_BYTE_0 = 0x00FF_FFFF_FFFF_FFFFL;
 
-    private final long[] state;
-
-    StateArray(final int longCount) {
-        state = new long[25];
-    }
+    private final long[] state = new long[25];
 
     byte get8(final int index8) {
         int index64 = index8 / 8;
