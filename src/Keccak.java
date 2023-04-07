@@ -29,6 +29,7 @@ public class Keccak {
 
         long[] bc = new long[5];
 
+        reverseByteOrderInLong(state);
         for (int i = 0; i < 24; i++) {
             theta(state, bc);
 
@@ -39,6 +40,20 @@ for (long n:state) {
             rhoAndPi(state, bc);
             chi(state, bc);
             iota(state, i);
+        }
+        reverseByteOrderInLong(state);
+    }
+
+    private static void reverseByteOrderInLong(final long[] state) {
+        for (int i = 0; i < state.length; i++) {
+            state[i] = ((state[i] & 0x0000_0000_0000_00FFL) << 56) |
+                    ((state[i] & 0x0000_0000_0000_FF00L) << 40) |
+                    ((state[i] & 0x0000_0000_00FF_0000L) << 24) |
+                    ((state[i] & 0x0000_0000_FF00_0000L) << 8) |
+                    ((state[i] & 0x0000_00FF_0000_0000L) >>> 8) |
+                    ((state[i] & 0x0000_FF00_0000_0000L) >>> 24) |
+                    ((state[i] & 0x00FF_0000_0000_0000L) >>> 40) |
+                    ((state[i] & 0xFF00_0000_0000_0000L) >>> 56);
         }
     }
 
