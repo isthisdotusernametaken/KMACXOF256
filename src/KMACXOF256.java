@@ -44,7 +44,7 @@ public class KMACXOF256 {
     }
 
     static byte[] encodeString(final byte[] S) {
-        return Util.cat(leftEncode(BigInteger.valueOf(S.length).toByteArray()), S);
+        return Util.cat(leftEncode(BigInteger.valueOf(S.length * 8).toByteArray()), S);
     }
 
     static byte[] rightEncode(final byte[] bytes) {
