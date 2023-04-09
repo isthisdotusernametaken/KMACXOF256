@@ -312,7 +312,7 @@ public class UserInterface {
 
         for (int i = 0; i < hexIt.length; i++) {
             System.out.print(hexIt[i]);
-            if ((i + 1) % 16 == 0) {
+            if ((i + 1) % 16 == 0 && (i + 1) < hexIt.length) {
                 System.out.print('\n');
             } else {
                 System.out.print(' ');

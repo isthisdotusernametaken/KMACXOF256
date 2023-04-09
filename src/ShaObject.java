@@ -111,8 +111,19 @@ public class ShaObject {
         ShaObject sha3 = new ShaObject(cShake);
 
         sha3.shake256_init();
+        System.out.println("About to Absorb data:");
+        UserInterface.printByteArrayAsHex(sha3.sa.array());
+        System.out.println("Data to be absorbed:");
+        UserInterface.printByteArrayAsHex(x);
+
         sha3.sha3_update(x, x.length);
+        System.out.println("After sha3_update:");
+        UserInterface.printByteArrayAsHex(sha3.sa.array());
+
         sha3.shake_xof();
+        System.out.println("After sha3_xof:");
+        UserInterface.printByteArrayAsHex(sha3.sa.array());
+
         byte[] res = new byte[l >>> 3];
         sha3.shake_out(res, l >>> 3);
 

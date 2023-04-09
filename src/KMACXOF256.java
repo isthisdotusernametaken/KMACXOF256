@@ -21,8 +21,18 @@ public class KMACXOF256 {
      * @param args unused
      */
     public static void main(String[] args) {
+        System.out.println("Test Case #3:");
         byte[] d = {0, 1, 2, 3};
         byte[] res = cSHAKE256(d, 512, "", "Email Signature");
+        System.out.println("Outval is:");
+        UserInterface.printByteArrayAsHex(res);
+
+        System.out.println("\n\nTest Case #4:");
+        d = new byte[200];
+        for (int i = 0; i < 200; i++) {
+            d[i] = (byte) i;
+        }
+        res = cSHAKE256(d, 512, "", "Email Signature");
         System.out.println("Outval is:");
         UserInterface.printByteArrayAsHex(res);
     }
