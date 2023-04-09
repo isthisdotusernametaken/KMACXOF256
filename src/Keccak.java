@@ -103,6 +103,6 @@ public class Keccak {
     }
 
     private static long ROTL64(final long x, final long y) {
-        return (x << y) | (x >> (64 - y));
+        return (x << y) | (x >>> (64 - y));
     }
 }
