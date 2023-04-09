@@ -33,6 +33,17 @@ public class KMACXOF256 {
         BigInteger bi = new BigInteger(Util.cat(
                 bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
                         encodeString(Util.ASCIIStringToBytes(S))), 136), X)).shiftLeft(2);
+
+        //TODO debug
+        System.out.println("N as bytes:");
+        UserInterface.printByteArrayAsHex(Util.ASCIIStringToBytes(N));
+        System.out.println("Encoded N:");
+        UserInterface.printByteArrayAsHex(encodeString(Util.ASCIIStringToBytes(N)));
+        System.out.println("Encoded S:");
+        UserInterface.printByteArrayAsHex(encodeString(Util.ASCIIStringToBytes(S)));
+        System.out.println("bytepad data:");
+        UserInterface.printByteArrayAsHex(Util.bigIntegerToBytes(bi));
+
         return ShaObject.shake256(Util.bigIntegerToBytes(bi), L, true);
     }
 

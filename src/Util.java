@@ -7,6 +7,9 @@ public class Util {
     };
 
     static byte[] ASCIIStringToBytes(final String ASCII) {
+        if (ASCII.isEmpty()) {
+            return new byte[1];
+        }
         var chars = ASCII.toCharArray();
         var bytes = new byte[chars.length];
 
