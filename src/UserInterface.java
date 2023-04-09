@@ -174,7 +174,7 @@ public class UserInterface {
         String rawInput = TEIN.nextLine();
 
         //do work.
-        byte[] byteInput = Util.ASCIIStringToBytes(rawInput);
+        byte[] byteInput = stringToFormattedBytes(rawInput);
         byte[] output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), byteInput, 512, Util.ASCIIStringToBytes("T"));
         printByteArrayAsHex(output);
 
@@ -242,13 +242,22 @@ public class UserInterface {
         String rawInput = TEIN.nextLine();
 
         //do stuff
-        byte[] byteInput = Util.ASCIIStringToBytes(rawInput);
+        byte[] byteInput = stringToFormattedBytes(rawInput);
         printByteArrayAsHex(byteInput);
 
         iCurrentMenu = MAIN_MENU;
     }
 
     /* Helper functions. */
+
+    /**
+     * Generates byte array with prepended length byte values.
+     * @param rawInput raw String input.
+     * @return byte array of encoded length prepended with contents of string.
+     */
+    static byte[] stringToFormattedBytes(final String rawInput) {
+        return KMACXOF256.encodeString(Util.ASCIIStringToBytes(rawInput));
+    }
 
     /**
      * Takes String to make into a nice int.

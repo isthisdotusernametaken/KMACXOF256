@@ -1,11 +1,20 @@
+import java.nio.ByteBuffer;
+import java.nio.LongBuffer;
 import java.util.Arrays;
 
 public class ShaObject {
 
-    public StateArray sa = new StateArray();
+    public ByteBuffer sa;
     public int pt;
     public int rsiz;
     public int mdlen;
+
+    /**
+     * Constructor so that the bytebuffer is built at correct size.
+     */
+    public ShaObject() {
+        sa = ByteBuffer.allocate(Long.BYTES * 25);
+    }
 
     // TODO - Add SHAKE256
     // TODO - Determine meanings of variable names and give new descriptive names
@@ -20,9 +29,10 @@ public class ShaObject {
 
     void sha3_init(int mdlen) {
         int i;
-
+        LongBuffer saAsLong = sa.asLongBuffer();
         for (i = 0; i < 25; i++)
-            this.sa.set64(i,0);
+            //this.sa.set64(i,0);
+            saAsLong.put(i,0);
         this.mdlen = mdlen;
         this.rsiz = 200 - 2 * mdlen;
         this.pt = 0;
@@ -34,10 +44,13 @@ public class ShaObject {
 
         j = this.pt;
         for (int i = 0; i < len; i++) {
-            this.sa.set8XOR(j++,data[i]);
+            //this.sa.set8XOR(j++,data[i]);
+            byte temp = (byte) (sa.get(i) ^ data[i]);
+            this.sa.put(j++,temp);
 
             if (j >= this.rsiz) {
-                Keccak.keccakF(this.sa.getArray());
+                //Keccak.keccakF(this.sa.getArray());
+                Keccak.keccakF(sa.asLongBuffer());
                 j = 0;
             }
         }
@@ -48,25 +61,38 @@ public class ShaObject {
     void sha3_final(byte[] md) {
         int i;
 
-        this.sa.set8XOR(this.pt, (byte) 0x06);
-        this.sa.set8XOR(this.rsiz-1, (byte) 0x80);
-        Keccak.keccakF(this.sa.getArray());
+        //this.sa.set8XOR(this.pt, (byte) 0x06);
+        byte temp = (byte) (sa.get(this.pt) ^ (byte) 0x06);
+        this.sa.put(this.pt,temp);
+
+        //this.sa.set8XOR(this.rsiz-1, (byte) 0x80);
+        temp = (byte) (sa.get(this.rsiz-1) ^ (byte) 0x80);
+        this.sa.put(this.rsiz-1,temp);
+
+        Keccak.keccakF(sa.asLongBuffer());
 
         for (i = 0; i < this.mdlen; i++) {
-            md[i] = this.sa.get8(i);
+            //md[i] = this.sa.get8(i);
+            md[i] = this.sa.get(i);
         }
     }
 
 // SHAKE128 and SHAKE256 extensible-output functionality
     void shake_xof() {
-        this.sa.set8XOR(this.pt, (byte) 0x1F);
-        this.sa.set8XOR(this.rsiz-1, (byte) 0x80);
+        //this.sa.set8XOR(this.pt, (byte) 0x1F);
+        byte temp = (byte) (sa.get(this.pt) ^ (byte) 0x1F);
+        this.sa.put(this.pt,temp);
 
-        Keccak.keccakF(this.sa.getArray());
+        //this.sa.set8XOR(this.rsiz-1, (byte) 0x80);
+        temp = (byte) (sa.get(this.rsiz-1) ^ (byte) 0x80);
+        this.sa.put(this.rsiz-1,temp);
 
-for (long num:this.sa.getArray()) {
-    System.out.print(Long.toHexString(num)+':');
-} System.out.print("\nXOF1\n");
+        Keccak.keccakF(sa.asLongBuffer());
+
+        //TODO debug
+        for (int i = 0; i < sa.capacity(); i++) {
+            System.out.print(String.format("%02X ", sa.get(i))+':');
+        } System.out.print("\nXOF1\n");
 
         this.pt = 0;
     }
@@ -77,10 +103,11 @@ for (long num:this.sa.getArray()) {
         j = this.pt;
         for (int i = 0; i < len; i++) {
             if (j >= this.rsiz) {
-                Keccak.keccakF(this.sa.getArray());
+                Keccak.keccakF(sa.asLongBuffer());
                 j = 0;
             }
-            out[i] = this.sa.get8(j++);
+            //out[i] = this.sa.get8(j++);
+            out[i] = this.sa.get(j++);
         }
         this.pt = j;
     }
@@ -112,9 +139,10 @@ for (long num:this.sa.getArray()) {
 
             sha3.shake256_init();
 
-for (long num:sha3.sa.getArray()) {
-    System.out.print(Long.toHexString(num)+':');
-} System.out.print("\n0's complete\n");
+            //TODO debug
+            for (int j = 0; j < sha3.sa.capacity(); j++) {
+                System.out.print(String.format("%02X ", sha3.sa.get(j))+':');
+            } System.out.print("\n0's complete\n");
 
             if (i >= 1) {                   // 1600-bit test pattern
                 Arrays.fill(buf, 0, 20, (byte) 0b10100011);
@@ -123,36 +151,42 @@ for (long num:sha3.sa.getArray()) {
                     sha3.shake_update(buf, 20);
             }
 
-for (long num:sha3.sa.getArray()) {
-    System.out.print(Long.toHexString(num)+':');
-} System.out.print("\nAfter message added\n");
+            //TODO debug
+            for (int j = 0; j < sha3.sa.capacity(); j++) {
+                System.out.print(String.format("%02X ", sha3.sa.get(j))+':');
+            } System.out.print("\nAfter message added\n");
 
             sha3.shake_xof();
 
-for (long num:sha3.sa.getArray()) {
-    System.out.print(Long.toHexString(num)+':');
-} System.out.print("\nAfter shakexof\n");
+            //TODO debug
+            for (int j = 0; j < sha3.sa.capacity(); j++) {
+                System.out.print(String.format("%02X ", sha3.sa.get(j))+':');
+            } System.out.print("\nAfter shakexof\n");
 
             for (int j = 0; j < 512; j += 32)   // output. discard bytes 0..479
                 sha3.shake_out(buf,32);
 
-for (long num:sha3.sa.getArray()) {
-    System.out.print(Long.toHexString(num)+':');
-} System.out.print("\nAfter shakeout\n");
+            //TODO debug
+            for (int j = 0; j < sha3.sa.capacity(); j++) {
+                System.out.print(String.format("%02X", sha3.sa.get(j))+':');
+            } System.out.print("\nAfter shakeout\n");
 
-            UserInterface.printByteArrayAsHex(buf);
-            boolean flip = true;
-            for (int j = 0; j < testhex[i].length(); j++) {
-                System.out.print(testhex[i].charAt(j));
-                flip ^= true;
-                if (flip) {
-                    System.out.print(""+' '+' '); //the most efficient way to print "  "
-                }
-                if ((j+1)%32 == 0) {
-                    System.out.print('\n');
-                }
-            }
-            System.out.println("\nNOU\n");
+            //TODO debug
+//            UserInterface.printByteArrayAsHex(buf);
+//            boolean flip = true;
+//            for (int j = 0; j < testhex[i].length(); j++) {
+//                System.out.print(testhex[i].charAt(j));
+//                flip ^= true;
+//                if (flip) {
+//                    System.out.print(""+' '+' '); //the most efficient way to print "  "
+//                }
+//                if ((j+1)%32 == 0) {
+//                    System.out.print('\n');
+//                }
+//            }
+
+            //TODO debug
+            System.out.println("\nENDFOR\n");
             // compare to reference
 //            test_readhex(ref, testhex[i], ref.length);
 //            if (Arrays.compare(buf,ref) != 0) {
