@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class KMACXOF256 {
 
@@ -22,6 +23,7 @@ public class KMACXOF256 {
     public static void main(String[] args) {
         byte[] d = {0, 1, 2, 3};
         byte[] res = cSHAKE256(d, 512, "", "Email Signature");
+        System.out.println("Outval is:");
         UserInterface.printByteArrayAsHex(res);
     }
 
