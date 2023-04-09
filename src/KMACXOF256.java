@@ -61,7 +61,7 @@ public class KMACXOF256 {
     }
 
     static byte[] bytepad(final byte[] X, final int w) {
-        final byte[] leftEncodedW = leftEncode(BigInteger.valueOf(w).toByteArray());
+        final byte[] leftEncodedW = leftEncode(Util.bigIntegerToBytes(BigInteger.valueOf(w)));
         final byte[] z = new byte[((leftEncodedW.length + X.length + (w - 1)) / w) * w];
 
         System.arraycopy(leftEncodedW, 0, z, 0, leftEncodedW.length);
