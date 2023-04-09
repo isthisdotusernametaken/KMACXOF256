@@ -68,7 +68,6 @@ public class ShaObject {
         Keccak.keccakF(sa.asLongBuffer());
 
         for (int i = 0; i < this.mdlen; i++) {
-            //md[i] = this.sa.get8(i);
             md[i] = this.sa.get(i);
         }
     }
