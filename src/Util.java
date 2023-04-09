@@ -19,7 +19,7 @@ public class Util {
     static byte[] bigIntegerToBytes(final BigInteger integer) {
         byte[] asBytes = integer.toByteArray();
 
-        if (asBytes[0] == 0) {
+        if (asBytes[0] == 0 && !BigInteger.ZERO.equals(integer)) {
             final byte[] withoutByteForSignBit = new byte[asBytes.length - 1];
             System.arraycopy(asBytes, 1, withoutByteForSignBit, 0, withoutByteForSignBit.length);
             asBytes = withoutByteForSignBit;
