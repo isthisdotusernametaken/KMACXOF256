@@ -148,7 +148,7 @@ public class UserInterface {
         }
 
         if (fileContent.length > 0) { //if try block was successful, math happens, capture output.
-            output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), fileContent, 512, Util.ASCIIStringToBytes("T"));
+            output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), fileContent, 512, "T");
         } else {
             System.out.println("No file content, unable to parse.");
         }
@@ -175,7 +175,7 @@ public class UserInterface {
 
         //do work.
         byte[] byteInput = stringToFormattedBytes(rawInput);
-        byte[] output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), byteInput, 512, Util.ASCIIStringToBytes("T"));
+        byte[] output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), byteInput, 512, "T");
         printByteArrayAsHex(output);
 
         //back to the top.

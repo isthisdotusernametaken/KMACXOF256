@@ -23,25 +23,13 @@ public class Keccak {
             15, 23, 19, 13, 12, 2, 20, 14, 22, 9,  6,  1
     };
 
-    // TODO - Add SHAKE256
-
-    // TODO - Determine meanings of variable names and give new descriptive names
     static void keccakF(final LongBuffer state) {
         // state must be of length 25
-
         long[] bc = new long[5];
-
         reverseByteOrderInLong(state);
+
         for (int i = 0; i < 24; i++) {
             theta(state, bc);
-
-            //TODO debug
-            if (i < 3) {
-                for (int j = 0; j < state.capacity(); j++) {
-                    System.out.print(Long.toHexString(state.get(j))+':');
-                } System.out.print("\nTHETA\n");
-            }
-
             rhoAndPi(state, bc);
             chi(state, bc);
             iota(state, i);

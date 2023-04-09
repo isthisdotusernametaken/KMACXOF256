@@ -2,33 +2,38 @@ import java.math.BigInteger;
 
 public class KMACXOF256 {
 
-//    static byte[] cSHAKE256(final byte[] X, final int L, final byte[] N, final byte[] S) {
-//        if (N.length == 0 && S.length == 0)
-//            return SHAKE256(X, L);
-//
-//        return Keccak.Keccak512(
-//                new BigInteger(Util.cat(
-//                        bytepad(
-//                                Util.cat(encodeString(N), encodeString(S)),
-//                                136
-//                        ),
-//                        X
-//                )).shiftLeft(2).toByteArray(),
-//                L
-//        );
-//    }
-
     /**
-     * Function that does all the work, probably.
+     * KMACXOF256 implementation.
      * @param K key bit string.
      * @param X main input bit string.
      * @param L integer representing desired output length in bits.
      * @param S optional customization bitstring, if no customization desired, S is empty string.
      * @return result of math.
      */
-    static byte[] runKMACXOF256(final byte[] K, final byte[] X, final int L, final byte[] S) {
+    static byte[] runKMACXOF256(final byte[] K, final byte[] X, final int L, final String S) {
         byte[] newX = Util.cat(bytepad(encodeString(K), 136), X, rightEncode(new byte[]{0}));
-        return newX; //TODO swap to returning cSHAKE256(newXm L, "KMAC", S);
+        return cSHAKE256(newX, L, "KMAC", S);
+    }
+
+    /**
+     * TODO This is debug for cSHAKE256 vs expected output documentation.
+     * @param args unused
+     */
+    public static void main(String[] args) {
+        byte[] d = {0, 1, 2, 3};
+        byte[] res = cSHAKE256(d, 512, "", "Email Signature");
+        UserInterface.printByteArrayAsHex(res);
+    }
+
+    static byte[] cSHAKE256(final byte[] X, final int L, final String N, final String S) {
+        if (N.isEmpty() && S.isEmpty()) {
+            return ShaObject.shake256(X, L, false);
+        }
+        //return KECCAK[512](bytepad(encode_string(N) || encode_string(S), 136) || X || 00, L).
+        BigInteger bi = new BigInteger(Util.cat(
+                bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
+                        encodeString(Util.ASCIIStringToBytes(S))), 136), X)).shiftLeft(2);
+        return ShaObject.shake256(Util.bigIntegerToBytes(bi), L, true);
     }
 
     static byte[] bytepad(final byte[] X, final int w) {
