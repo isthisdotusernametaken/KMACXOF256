@@ -1,3 +1,5 @@
+import java.nio.LongBuffer;
+
 public class Keccak {
 
     private static final long[] keccakFRNDC = {
@@ -24,7 +26,7 @@ public class Keccak {
     // TODO - Add SHAKE256
 
     // TODO - Determine meanings of variable names and give new descriptive names
-    static void keccakF(final long[] state) {
+    static void keccakF(final LongBuffer state) {
         // state must be of length 25
 
         long[] bc = new long[5];
@@ -44,54 +46,57 @@ for (long n:state) {
         reverseByteOrderInLong(state);
     }
 
-    private static void reverseByteOrderInLong(final long[] state) {
-        for (int i = 0; i < state.length; i++) {
-            state[i] = ((state[i] & 0x0000_0000_0000_00FFL) << 56) |
-                    ((state[i] & 0x0000_0000_0000_FF00L) << 40) |
-                    ((state[i] & 0x0000_0000_00FF_0000L) << 24) |
-                    ((state[i] & 0x0000_0000_FF00_0000L) << 8) |
-                    ((state[i] & 0x0000_00FF_0000_0000L) >>> 8) |
-                    ((state[i] & 0x0000_FF00_0000_0000L) >>> 24) |
-                    ((state[i] & 0x00FF_0000_0000_0000L) >>> 40) |
-                    ((state[i] & 0xFF00_0000_0000_0000L) >>> 56);
+    private static void reverseByteOrderInLong(final LongBuffer state) {
+        for (int i = 0; i < state.capacity(); i++) {
+            state.put(
+                    i,
+                    ((state.get(i) & 0x0000_0000_0000_00FFL) << 56) |
+                    ((state.get(i) & 0x0000_0000_0000_FF00L) << 40) |
+                    ((state.get(i) & 0x0000_0000_00FF_0000L) << 24) |
+                    ((state.get(i) & 0x0000_0000_FF00_0000L) << 8) |
+                    ((state.get(i) & 0x0000_00FF_0000_0000L) >>> 8) |
+                    ((state.get(i) & 0x0000_FF00_0000_0000L) >>> 24) |
+                    ((state.get(i) & 0x00FF_0000_0000_0000L) >>> 40) |
+                    ((state.get(i) & 0xFF00_0000_0000_0000L) >>> 56)
+            );
         }
     }
 
-    private static void theta(final long[] state, final long[] bc) {
+    private static void theta(final LongBuffer state, final long[] bc) {
         for (int i = 0; i < 5; i++)
-            bc[i] = state[i] ^ state[i + 5] ^ state[i + 10] ^ state[i + 15] ^ state[i + 20];
+            bc[i] = state.get(i) ^ state.get(i + 5) ^ state.get(i + 10) ^ state.get(i + 15) ^ state.get(i + 20);
 
         long t;
         for (int i = 0; i < 5; i++) {
             t = bc[(i + 4) % 5] ^ ROTL64(bc[(i + 1) % 5], 1);
 
             for (int j = 0; j < 25; j += 5)
-                state[i + j] ^= t;
+                state.put(i + j, state.get(i + j) ^ t);
         }
     }
 
-    private static void rhoAndPi(final long[] state, final long[] bc) {
-        long t = state[1];
+    private static void rhoAndPi(final LongBuffer state, final long[] bc) {
+        long t = state.get(1);
         for (int i = 0, j; i < 24; i++) {
             j = keccakFPILN[i];
-            bc[0] = state[j];
-            state[j] = ROTL64(t, keccakFROTC[i]);
+            bc[0] = state.get(j);
+            state.put(j, ROTL64(t, keccakFROTC[i]));
 
             t = bc[0];
         }
     }
 
-    private static void chi(final long[] state, final long[] bc) {
+    private static void chi(final LongBuffer state, final long[] bc) {
         for (int i = 0; i < 25; i += 5) {
             for (int j = 0; j < 5; j++)
-                bc[j] = state[i + j];
+                bc[j] = state.get(i + j);
             for (int j = 0; j < 5; j++)
-                state[i + j] ^= ~bc[(j + 1) % 5] & bc[(j + 2) % 5];
+                state.put(i + j, state.get(i + j) ^ (~bc[(j + 1) % 5] & bc[(j + 2) % 5]));
         }
     }
 
-    private static void iota(final long[] state, final int iteration) {
-        state[0] ^= keccakFRNDC[iteration];
+    private static void iota(final LongBuffer state, final int iteration) {
+        state.put(0, state.get(0) ^ keccakFRNDC[iteration]);
     }
 
     private static long ROTL64(final long x, final long y) {
