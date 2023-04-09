@@ -54,7 +54,8 @@ public class KMACXOF256 {
         System.out.println("Encoded S:");
         UserInterface.printByteArrayAsHex(encodeString(Util.ASCIIStringToBytes(S)));
         System.out.println("bytepad data:");
-        UserInterface.printByteArrayAsHex(Util.bigIntegerToBytes(bi));
+        UserInterface.printByteArrayAsHex(bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
+                encodeString(Util.ASCIIStringToBytes(S))), 136));
 
         return ShaObject.shake256(Util.bigIntegerToBytes(bi), L, true);
     }
