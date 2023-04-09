@@ -1,3 +1,5 @@
+import java.math.BigInteger;
+
 public class Util {
 
     private static final char[] HEX_CHARS = {
@@ -12,6 +14,18 @@ public class Util {
             bytes[i] = (byte) chars[i];
 
         return bytes;
+    }
+
+    static byte[] bigIntegerToBytes(final BigInteger integer) {
+        byte[] asBytes = integer.toByteArray();
+
+        if (asBytes[0] == 0) {
+            final byte[] withoutByteForSignBit = new byte[asBytes.length - 1];
+            System.arraycopy(asBytes, 1, withoutByteForSignBit, 0, withoutByteForSignBit.length);
+            asBytes = withoutByteForSignBit;
+        }
+
+        return asBytes;
     }
 
     static String bytesToByteSpacedHexString(final byte[] bytes) {

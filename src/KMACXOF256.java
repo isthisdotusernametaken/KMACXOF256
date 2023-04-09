@@ -44,15 +44,12 @@ public class KMACXOF256 {
     }
 
     static byte[] encodeString(final byte[] S) {
-        byte[] lengthAsBytes = BigInteger.valueOf(S.length * 8L).toByteArray();
-
-        if (lengthAsBytes[0] == 0) {
-            final byte[] withoutByteForSignBit = new byte[lengthAsBytes.length - 1];
-            System.arraycopy(lengthAsBytes, 1, withoutByteForSignBit, 0, withoutByteForSignBit.length);
-            lengthAsBytes = withoutByteForSignBit;
-        }
-
-        return Util.cat(leftEncode(lengthAsBytes), S);
+        return Util.cat(
+                leftEncode(
+                        Util.bigIntegerToBytes(BigInteger.valueOf(S.length * 8L))
+                ),
+                S
+        );
     }
 
     static byte[] rightEncode(final byte[] bytes) {
