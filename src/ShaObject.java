@@ -47,10 +47,10 @@ public class ShaObject {
 
         for (int i = 0; i < len; i++) {
             byte temp = (byte) (sa.get(j) ^ data[i]);
-            this.sa.put(j++, temp);
+            this.sa.put(j++, temp); // generate data in buffer to provide to keccakf
 
             if (j >= this.rsiz) {
-                Keccak.keccakF(sa.asLongBuffer());
+                Keccak.keccakF(sa.asLongBuffer()); // when buffer full, send to keccakf to hash (xor'd data)
                 j = 0;
             }
         }
