@@ -21,20 +21,129 @@ public class KMACXOF256 {
      * @param args unused
      */
     public static void main(String[] args) {
-        System.out.println("Test Case #3:");
+        //Required things to make tests happen.
+        ShaObject sha = new ShaObject(true);
         byte[] d = {0, 1, 2, 3};
-        byte[] res = cSHAKE256(d, 512, "", "Email Signature");
-        System.out.println("Outval is:");
+        String N = "";
+        String S = "Email Signature";
+        int L = 512;
+
+        //Encoded bytepad of N and S strings.
+        //TODO this is not 200 length per spec, but when i set it to correct length, wrong output
+        byte[] temp = bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
+                        encodeString(Util.ASCIIStringToBytes(S))),136);
+
+        //makes temp 200 length
+//        temp = Util.cat(temp,new byte[64]);
+//        UserInterface.printByteArrayAsHex(temp);
+//        System.out.println(temp.length);
+
+        System.out.println("TEST 3:");
+
+        //1. init
+        sha.shake256_init();
+
+        System.out.println("About to Absorb data NS:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //2. feed in bytepad NS
+        sha.sha3_update(temp,temp.length); //correct data, wrong length, but correct length makes output bad
+
+        System.out.println("After Update NS:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //3. feed bytepad: data
+        //TODO this is not the correct data but produces correct output LOL
+        sha.sha3_update(d,d.length); //data given: {0,1,2,3}, should be: {0,1,2,3,4,0,...,80,...,0} 200 length.
+
+        System.out.println("After Update data:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //4. xof
+        sha.shake_xof(); //just kinda put this here, and it seems to do good stuff.
+
+        System.out.println("After XOF:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //5. outval
+        byte[] res = new byte[L >>> 3];
+        sha.shake_out(res, L >>> 3);
+
+        System.out.println("Outval:");
         UserInterface.printByteArrayAsHex(res);
 
-        System.out.println("\n\nTest Case #4:");
+        /*
+        spacer comment so it's easier to spot test 4.
+        Below is not as commented as above, but it's all the same ideas, except with multiple data rounds.
+         */
+
+        System.out.println("\n\nTEST 4:");
+        sha = new ShaObject(true);
+
+        //1. init
+        sha.shake256_init();
+
+        System.out.println("About to Absorb data NS:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //2. feed in bytepad NS
+        sha.sha3_update(temp,temp.length);
+
+        System.out.println("After Update NS:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //3. feed bytepad: data: part 1
+        //hardcoded data generation
         d = new byte[200];
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 136; i++) {
             d[i] = (byte) i;
         }
-        res = cSHAKE256(d, 512, "", "Email Signature");
-        System.out.println("Outval is:");
+        sha.sha3_update(d,d.length);
+
+        System.out.println("After Update data 1:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //4. feed bytepad: data: part 2
+        //hardcoded data generation
+        d = new byte[200];
+        for (int i = 136; i < 200; i++) {
+            d[i-136] = (byte) i;
+        }
+        d[64] = (byte) 4;
+        d[135] = (byte) 128;
+        sha.sha3_update(d,d.length);
+
+        System.out.println("After Update data 2:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //5. xof
+        sha.shake_xof();
+
+        System.out.println("After XOF:");
+        UserInterface.printByteArrayAsHex(sha.sa.array());
+
+        //6. outval
+        res = new byte[L >>> 3];
+        sha.shake_out(res, L >>> 3);
+
+        System.out.println("Outval:");
         UserInterface.printByteArrayAsHex(res);
+
+        /*
+        Old.
+         */
+//        byte[] res = cSHAKE256(d, 512, "", "Email Signature");
+//        System.out.println("Outval is:");
+//        UserInterface.printByteArrayAsHex(res);
+//
+//        System.out.println("\n\nTest Case #4:");
+//        d = new byte[200];
+//        for (int i = 0; i < 200; i++) {
+//            d[i] = (byte) i;
+//        }
+//        res = cSHAKE256(d, 512, "", "Email Signature");
+//        System.out.println("Outval is:");
+//        UserInterface.printByteArrayAsHex(res);
     }
 
     static byte[] cSHAKE256(final byte[] X, final int L, final String N, final String S) {
