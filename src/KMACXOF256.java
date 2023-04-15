@@ -152,8 +152,15 @@ public class KMACXOF256 {
         }
         //return KECCAK[512](bytepad(encode_string(N) || encode_string(S), 136) || X || 00, L).
         BigInteger bi = new BigInteger(Util.cat(
-                bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
-                        encodeString(Util.ASCIIStringToBytes(S))), 136), X)).shiftLeft(2);
+                bytepad(
+                        Util.cat(
+                                encodeString(Util.ASCIIStringToBytes(N)),
+                                encodeString(Util.ASCIIStringToBytes(S))
+                        ),
+                        136
+                ),
+                X
+        )).shiftLeft(2);
 
         //TODO debug
         System.out.println("N as bytes:");
