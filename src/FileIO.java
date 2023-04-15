@@ -14,9 +14,13 @@ public class FileIO {
         }
     }
 
-    static boolean writeToFile(final byte[] dataToWrite, final String outputType) {
+    static boolean writeToFileWithTimestamp(final byte[] dataToWrite, final String outputType) {
+        return writeToFile(dataToWrite, outputType + "_" + System.currentTimeMillis());
+    }
+
+    static boolean writeToFile(final byte[] dataToWrite, final String filename) {
         try {
-            Files.write(Path.of(outputType + "_" + System.currentTimeMillis() + ".bin"), dataToWrite);
+            Files.write(Path.of(filename + ".bin"), dataToWrite);
             return true;
         } catch (IOException e) {
             System.out.println("File could not be written.");

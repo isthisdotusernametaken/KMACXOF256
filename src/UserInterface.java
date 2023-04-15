@@ -141,7 +141,7 @@ public class UserInterface {
         if (FileIO.readFromFile(fileContent, rawInput)) {
             output = Services.cryptographicHash(fileContent[0]);
 
-            if (FileIO.writeToFile(output, "hash")) {
+            if (FileIO.writeToFileWithTimestamp(output, "hash")) {
                 System.out.println("Hash generated from input:");
                 UserInterface.printByteArrayAsHex(output);
             }
@@ -203,7 +203,7 @@ public class UserInterface {
         if (FileIO.readFromFile(fileContent, rawInput)) {
             output = Services.authenticationTag(fileContent[0], bytePw);
 
-            if (FileIO.writeToFile(output, "mac")) {
+            if (FileIO.writeToFileWithTimestamp(output, "mac")) {
                 System.out.println("Auth Tag generated from input:");
                 UserInterface.printByteArrayAsHex(output);
             }
