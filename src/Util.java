@@ -59,6 +59,14 @@ public class Util {
         return result;
     }
 
+    static void split(final byte[][] destinationArrays, final byte[] sourceArray) {
+        destinationArrays[0] = new byte[sourceArray.length / 2];
+        destinationArrays[1] = new byte[sourceArray.length / 2];
+
+        System.arraycopy(sourceArray, 0, destinationArrays[0], 0, sourceArray.length / 2);
+        System.arraycopy(sourceArray, sourceArray.length / 2, destinationArrays[1], 0, sourceArray.length / 2);
+    }
+
     /**
      * Generates byte array with prepended length byte values.
      * @param rawInput raw String input.
