@@ -82,4 +82,26 @@ public class Util {
 
         return output;
     }
+
+    /**
+     * XOR's contents of two byte arrays, explodes if arrays are not same length.
+     * @param first first byte array to xor.
+     * @param second second byte array to xor.
+     * @return byte array of xor'd values.
+     */
+    static byte[] xorByteArrays(final byte[] first, final byte[] second) {
+
+        if (first.length != second.length) {
+            throw new IllegalStateException("lengths of arrays to XOR do not match. L1:"
+                    + first.length  + " L2:" +  second.length);
+        }
+
+        byte[] res = new byte[first.length];
+
+        for (int i = 0; i < first.length; i++) {
+            res[i] = (byte) (first[i] ^ second[i]);
+        }
+
+        return res;
+    }
 }

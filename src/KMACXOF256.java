@@ -16,32 +16,6 @@ public class KMACXOF256 {
     }
 
     /**
-     * Example usage of cSHAKE without KMACXOF256 involved.
-     * Tests run are examples 3 and 4 from provided NIST test vector documentation.
-     * @param args unused
-     */
-    public static void main(final String[] args) {
-        //Required things to make tests happen.
-        ShaObject sha = new ShaObject(true);
-        byte[] d = {0, 1, 2, 3};
-        String N = "";
-        String S = "Email Signature";
-        int L = 512;
-
-        System.out.println("T3:");
-        UserInterface.printByteArrayAsHex(cSHAKE256(d, L, N, S));
-
-        d = new byte[200];
-        for (int i = 0; i < 200; i++) {
-            d[i] = (byte) i;
-        }
-
-        System.out.println("\n\nT4:");
-        UserInterface.printByteArrayAsHex(cSHAKE256(d, L, N, S));
-
-    }
-
-    /**
      * Handles cSHAKE256 implementation, if N&S are empty uses SHAKE256 instead as per spec.
      * @param X data input as byte array.
      * @param L desired output bit-length from cSHAKE.
@@ -102,5 +76,31 @@ public class KMACXOF256 {
         bytesOfO[prependLength ? 0 : bytesOfO.length - 1] = (byte) bytesOfX.length;
 
         return bytesOfO;
+    }
+
+    /**
+     * Example usage of cSHAKE without KMACXOF256 involved.
+     * Tests run are examples 3 and 4 from provided NIST test vector documentation.
+     * @param args unused
+     */
+    public static void main(final String[] args) {
+        //Required things to make tests happen.
+        ShaObject sha = new ShaObject(true);
+        byte[] d = {0, 1, 2, 3};
+        String N = "";
+        String S = "Email Signature";
+        int L = 512;
+
+        System.out.println("T3:");
+        UserInterface.printByteArrayAsHex(cSHAKE256(d, L, N, S));
+
+        d = new byte[200];
+        for (int i = 0; i < 200; i++) {
+            d[i] = (byte) i;
+        }
+
+        System.out.println("\n\nT4:");
+        UserInterface.printByteArrayAsHex(cSHAKE256(d, L, N, S));
+
     }
 }

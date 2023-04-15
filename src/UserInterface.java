@@ -1,6 +1,3 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -44,6 +41,8 @@ public class UserInterface {
     private static final String FILE_INPUT_PROMPT = "Input location of file: ";
     /** Text input dialogue. */
     private static final String TEXT_INPUT_PROMPT = "Input text: ";
+    /** Passphrase input dialogue. */
+    private static final String PASSPHRASE_INPUT_PROMPT = "Input passphrase: ";
 
     /* Other Stuff. */
 
@@ -128,7 +127,6 @@ public class UserInterface {
      * Functionality for obtaining cryptographic hash of a file.
      * File->Byte[]: <a href="https://stackoverflow.com/questions/858980/file-to-byte-in-java">source</a>
      * Byte[]->File: <a href="https://stackoverflow.com/questions/4350084/byte-to-file-in-java">unused</a>
-     * TODO: KMACX spec input is strings, this should work but not tested. Remove debug print statements.
      */
     static void hashFromFile() {
         //say hello, get input.
@@ -137,26 +135,16 @@ public class UserInterface {
         String rawInput = TEIN.nextLine();
 
         //do work.
-        byte[] fileContent = new byte[0];
-        byte[] output = new byte[0];
+        byte[][] fileContent = new byte[1][];
+        byte[] output;
 
-        try { //get file as byte array.
-            //fileContent = Files.readAllBytes(new File(rawInput).toPath());
-            fileContent = Files.readAllBytes(Paths.get(rawInput));
-        } catch (IOException e) {
-            System.out.println("File not reachable.");
-        }
+        if (FileIO.readFromFile(fileContent, rawInput)) {
+            output = Services.cryptographicHash(fileContent[0]);
 
-        if (fileContent.length > 0) { //if try block was successful, math happens, capture output.
-            output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), fileContent, 512, "T");
-        } else {
-            System.out.println("No file content, unable to parse.");
-        }
-
-        if (output.length > 0) { //print output.
-            printByteArrayAsHex(output);
-        } else {
-            System.out.println("No output to parse into hex.");
+            if (FileIO.writeToFile(output, "hash")) {
+                System.out.println("Hash generated from input:");
+                UserInterface.printByteArrayAsHex(output);
+            }
         }
 
         //back to the top.
@@ -165,7 +153,6 @@ public class UserInterface {
 
     /**
      * Functionality for obtaining cryptographic hash of user input.
-     * TODO: KMACX spec input is strings, this should work but not tested.
      */
     static void hashFromInput() {
         //say hello, get input.
@@ -174,8 +161,10 @@ public class UserInterface {
         String rawInput = TEIN.nextLine();
 
         //do work.
-        byte[] byteInput = Util.stringToFormattedBytes(rawInput);
-        byte[] output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), byteInput, 512, "D");
+        byte[] byteInput = Util.ASCIIStringToBytes(rawInput);
+        byte[] output = Services.cryptographicHash(byteInput);
+
+        System.out.println("Hash generated from input:");
         printByteArrayAsHex(output);
 
         //back to the top.
@@ -196,7 +185,6 @@ public class UserInterface {
         }
     }
 
-
     /**
      * Functionality for obtaining auth tag of a file.
      */
@@ -204,7 +192,24 @@ public class UserInterface {
         System.out.println(AUTH_MENU.substring(0, 34));
         System.out.println(FILE_INPUT_PROMPT);
         String rawInput = TEIN.nextLine();
-        //do stuff
+        System.out.println(PASSPHRASE_INPUT_PROMPT);
+        String rawPwInput = TEIN.nextLine();
+
+        //do work.
+        byte[][] fileContent = new byte[1][];
+        byte[] output;
+        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
+
+        if (FileIO.readFromFile(fileContent, rawInput)) {
+            output = Services.authenticationTag(fileContent[0], bytePw);
+
+            if (FileIO.writeToFile(output, "mac")) {
+                System.out.println("Auth Tag generated from input:");
+                UserInterface.printByteArrayAsHex(output);
+            }
+        }
+
+        //back to the top.
         iCurrentMenu = MAIN_MENU;
     }
 
@@ -216,7 +221,18 @@ public class UserInterface {
         System.out.println(AUTH_MENU.substring(0, 34));
         System.out.println(TEXT_INPUT_PROMPT);
         String rawInput = TEIN.nextLine();
-        //do stuff
+        System.out.println(PASSPHRASE_INPUT_PROMPT);
+        String rawPwInput = TEIN.nextLine();
+
+        //do work.
+        byte[] byteInput = Util.ASCIIStringToBytes(rawInput);
+        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
+
+        byte[] output = Services.authenticationTag(byteInput, bytePw);
+
+        System.out.println("Auth Tag generated from input:");
+        printByteArrayAsHex(output);
+
         iCurrentMenu = MAIN_MENU;
     }
 

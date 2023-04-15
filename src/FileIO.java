@@ -14,9 +14,9 @@ public class FileIO {
         }
     }
 
-    static boolean writeToFile(final byte[] dataToRead, final String outputType) {
+    static boolean writeToFile(final byte[] dataToWrite, final String outputType) {
         try {
-            Files.write(Path.of(outputType + "_" + System.currentTimeMillis()), dataToRead);
+            Files.write(Path.of(outputType + "_" + System.currentTimeMillis() + ".bin"), dataToWrite);
             return true;
         } catch (IOException e) {
             System.out.println("File could not be written.");
