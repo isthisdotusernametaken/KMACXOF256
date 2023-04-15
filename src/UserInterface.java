@@ -1,6 +1,7 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
-public class UserInterface {
+public class UserInterface { //TODO: bad input handling (w<0 or whatever
 
     /* Menu Text. */
 
@@ -125,8 +126,6 @@ public class UserInterface {
 
     /**
      * Functionality for obtaining cryptographic hash of a file.
-     * File->Byte[]: <a href="https://stackoverflow.com/questions/858980/file-to-byte-in-java">source</a>
-     * Byte[]->File: <a href="https://stackoverflow.com/questions/4350084/byte-to-file-in-java">unused</a>
      */
     static void hashFromFile() {
         //say hello, get input.
@@ -243,23 +242,70 @@ public class UserInterface {
         System.out.println(ENCRYPT_MENU);
         System.out.println(FILE_INPUT_PROMPT);
         String rawInput = TEIN.nextLine();
-        //do stuff
+        System.out.println(PASSPHRASE_INPUT_PROMPT);
+        String rawPwInput = TEIN.nextLine();
+        System.out.println("What should the output file be named:");
+        String outputName = TEIN.nextLine();
+
+        //do work
+        byte[][] fileContent = new byte[1][];
+        SymmetricCryptogram output;
+        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
+
+        if (FileIO.readFromFile(fileContent, rawInput)) {
+            output = Services.encrypt(fileContent[0], bytePw);
+
+            boolean writeSuccess = FileIO.writeToFile(output.z(), outputName + "_z", true);
+            writeSuccess &= FileIO.writeToFile(output.c(), outputName + "_c", true);
+            writeSuccess &= FileIO.writeToFile(output.t(), outputName + "_t", true);
+
+            if (writeSuccess) {
+                System.out.println("Files written successfully.");
+            }
+        }
+
+        //back to the top.
         iCurrentMenu = MAIN_MENU;
     }
 
     /**
      * Functionality for decryption of file.
-     * TODO: current code body just here for testing. To see if String->Hex conversion was successful use link.
-     * <a href="https://string-functions.com/string-hex.aspx">String->Hex checker</a>
      */
     static void decryptMenuHandler() {
         System.out.println(DECRYPT_MENU);
-        System.out.println(FILE_INPUT_PROMPT);
+        System.out.println("Input filename given during encryption process:");
         String rawInput = TEIN.nextLine();
+        System.out.println(PASSPHRASE_INPUT_PROMPT);
+        String rawPwInput = TEIN.nextLine();
+        System.out.println("Input name of desired output file with extension:");
+        String rawOutInput = TEIN.nextLine();
 
         //do stuff
-        byte[] byteInput = Util.stringToFormattedBytes(rawInput);
-        printByteArrayAsHex(byteInput);
+        byte[][] fileContent = new byte[1][];
+        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
+
+        boolean readStatus = FileIO.readFromFile(fileContent, rawInput + "_z.bin");
+        byte[] z = fileContent[0];
+
+        readStatus &= FileIO.readFromFile(fileContent, rawInput + "_c.bin");
+        byte[] c = fileContent[0];
+
+        readStatus &= FileIO.readFromFile(fileContent, rawInput + "_t.bin");
+        byte[] t = fileContent[0];
+
+        if (readStatus) {
+            SymmetricCryptogram inData = new SymmetricCryptogram(z, c, t);
+
+            if (Services.decrypt(fileContent, inData, bytePw)) {
+                System.out.println("Decrypt successful.");
+
+                if (FileIO.writeToFile(fileContent[0], rawOutInput, false)) {
+                    System.out.println("Files written successfully.");
+                }
+            } else {
+                System.out.println("Decrypt failed: t did not match t'.");
+            }
+        }
 
         iCurrentMenu = MAIN_MENU;
     }
