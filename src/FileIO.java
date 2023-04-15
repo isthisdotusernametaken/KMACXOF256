@@ -15,12 +15,12 @@ public class FileIO {
     }
 
     static boolean writeToFileWithTimestamp(final byte[] dataToWrite, final String outputType) {
-        return writeToFile(dataToWrite, outputType + "_" + System.currentTimeMillis());
+        return writeToFile(dataToWrite, outputType + "_" + System.currentTimeMillis(), true);
     }
 
-    static boolean writeToFile(final byte[] dataToWrite, final String filename) {
+    static boolean writeToFile(final byte[] dataToWrite, final String filename, final boolean appendBinExtension) {
         try {
-            Files.write(Path.of(filename + ".bin"), dataToWrite);
+            Files.write(Path.of(filename + (appendBinExtension ? ".bin" : "")), dataToWrite);
             return true;
         } catch (IOException e) {
             System.out.println("File could not be written.");
