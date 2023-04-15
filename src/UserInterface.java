@@ -1,7 +1,11 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
-public class UserInterface { //TODO: bad input handling (w<0 or whatever
+    /* TODO - office hour
+    -error checking, aka -w is impossible?
+    -verify output
+     */
+
+public class UserInterface {
 
     /* Menu Text. */
 
