@@ -24,12 +24,16 @@ public class Services {
         return new SymmetricCryptogram(z, c, t);
     }
 
-    static boolean decrypt(final SymmetricCryptogram cryptogram, final byte[] pw) {
+    static boolean decrypt(final byte[][] mOut, final SymmetricCryptogram cryptogram, final byte[] pw) {
         final byte[][] keAndKa = calculateKeAndKa(cryptogram.z(), pw);
         final byte[] m = calculateCOrM(keAndKa[0], cryptogram.c());
         final byte[] tPrime = calculateT(keAndKa[1], m);
 
-        return Arrays.equals(tPrime, cryptogram.t());
+        if (Arrays.equals(tPrime, cryptogram.t())) {
+            mOut[0] = m;
+            return true;
+        }
+        return false;
     }
 
     private static byte[][] calculateKeAndKa(final byte[] z, final byte[] passphrase) {
