@@ -174,8 +174,8 @@ public class UserInterface {
         String rawInput = TEIN.nextLine();
 
         //do work.
-        byte[] byteInput = stringToFormattedBytes(rawInput);
-        byte[] output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), byteInput, 512, "T");
+        byte[] byteInput = Util.stringToFormattedBytes(rawInput);
+        byte[] output = KMACXOF256.runKMACXOF256(Util.ASCIIStringToBytes(""), byteInput, 512, "D");
         printByteArrayAsHex(output);
 
         //back to the top.
@@ -242,22 +242,13 @@ public class UserInterface {
         String rawInput = TEIN.nextLine();
 
         //do stuff
-        byte[] byteInput = stringToFormattedBytes(rawInput);
+        byte[] byteInput = Util.stringToFormattedBytes(rawInput);
         printByteArrayAsHex(byteInput);
 
         iCurrentMenu = MAIN_MENU;
     }
 
     /* Helper functions. */
-
-    /**
-     * Generates byte array with prepended length byte values.
-     * @param rawInput raw String input.
-     * @return byte array of encoded length prepended with contents of string.
-     */
-    static byte[] stringToFormattedBytes(final String rawInput) {
-        return KMACXOF256.encodeString(Util.ASCIIStringToBytes(rawInput));
-    }
 
     /**
      * Takes String to make into a nice int.
@@ -276,39 +267,11 @@ public class UserInterface {
     }
 
     /**
-     * Turn a byte[] into formatted hex string to make it look pretty.
-     * @param pSourceByteArray source byte[] to format.
-     * @return string of hex representation for byte[].
-     */
-    static String byteArrayToHexString(final byte[] pSourceByteArray) {
-        StringBuilder sb = new StringBuilder();
-        for (byte by: pSourceByteArray) {
-            sb.append(String.format("%02X ", by));
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Turn a byte[] into formatted hex string array to make it look pretty.
-     * @param pSourceByteArray source byte[] to format.
-     * @return string[] of hex representation for byte[].
-     */
-    static String[] byteArrayToHexStringArray(final byte[] pSourceByteArray) {
-        String[] output = new String[pSourceByteArray.length];
-
-        for (int i = 0; i < pSourceByteArray.length; i++) {
-            output[i] = String.format("%02X ", pSourceByteArray[i]);
-        }
-
-        return output;
-    }
-
-    /**
      * Print byte[] as formatted hex string to make it look pretty.
      * @param pSourceByteArray source byte[] to print.
      */
     static void printByteArrayAsHex(final byte[] pSourceByteArray) {
-        String[] hexIt = byteArrayToHexStringArray(pSourceByteArray);
+        String[] hexIt = Util.byteArrayToHexStringArray(pSourceByteArray);
 
         for (int i = 0; i < hexIt.length; i++) {
             System.out.print(hexIt[i]);

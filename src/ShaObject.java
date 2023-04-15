@@ -100,35 +100,9 @@ public class ShaObject {
     }
 
     /**
-     * Method that returns shake256 stuff
-     * @param x input bitstring
-     * @param l lenth of output
-     * @param cShake if implementation is cSHAKE or SHAKE
-     * @return result of SHAKE256
+     * Example usage of SHAKE256 directly, code converted from the tiny_sha3 main method.
+     * @param args unused.
      */
-    public static byte[] shake256(final byte[] x, final int l, final boolean cShake) {
-        ShaObject sha3 = new ShaObject(cShake);
-
-        sha3.shake256_init();
-        System.out.println("About to Absorb data:");
-        UserInterface.printByteArrayAsHex(sha3.sa.array());
-        System.out.println("Data to be absorbed:");
-        UserInterface.printByteArrayAsHex(x);
-
-        sha3.sha3_update(x, x.length);
-        System.out.println("After sha3_update:");
-        UserInterface.printByteArrayAsHex(sha3.sa.array());
-
-        sha3.shake_xof();
-        System.out.println("After sha3_xof:");
-        UserInterface.printByteArrayAsHex(sha3.sa.array());
-
-        byte[] res = new byte[l >>> 3];
-        sha3.shake_out(res, l >>> 3);
-
-        return res;
-    }
-
     public static void main(String[] args) {
         ShaObject sha3 = new ShaObject(false);
         byte[] buf = new byte[32];
@@ -143,27 +117,23 @@ public class ShaObject {
                     sha3.shake_update(buf, 20);
             }
 
-            //TODO debug
             for (int j = 0; j < sha3.sa.capacity(); j++) {
-                System.out.print(String.format("%02X", sha3.sa.get(j))+':');
+                System.out.print(String.format("%02X", sha3.sa.get(j)) + ':');
             } System.out.print("\nAfter message added\n");
 
             sha3.shake_xof();
 
-            //TODO debug
             for (int j = 0; j < sha3.sa.capacity(); j++) {
-                System.out.print(String.format("%02X", sha3.sa.get(j))+':');
+                System.out.print(String.format("%02X", sha3.sa.get(j)) + ':');
             } System.out.print("\nAfter shakexof\n");
 
             for (int j = 0; j < 512; j += 32)   // output. discard bytes 0..479
-                sha3.shake_out(buf,32);
+                sha3.shake_out(buf, 32);
 
-            //TODO debug
             for (int j = 0; j < sha3.sa.capacity(); j++) {
-                System.out.print(String.format("%02X", sha3.sa.get(j))+':');
+                System.out.print(String.format("%02X", sha3.sa.get(j)) + ':');
             } System.out.print("\nAfter shakeout\n");
 
-            //TODO debug
             System.out.println("\nENDFOR\n");
         }
     }

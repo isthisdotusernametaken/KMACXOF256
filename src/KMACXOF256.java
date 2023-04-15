@@ -1,5 +1,4 @@
 import java.math.BigInteger;
-import java.util.Arrays;
 
 public class KMACXOF256 {
 
@@ -17,10 +16,11 @@ public class KMACXOF256 {
     }
 
     /**
-     * TODO This is debug for cSHAKE256 vs expected output documentation.
+     * Example usage of cSHAKE without KMACXOF256 involved.
+     * Tests run are examples 3 and 4 from provided NIST test vector documentation.
      * @param args unused
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         //Required things to make tests happen.
         ShaObject sha = new ShaObject(true);
         byte[] d = {0, 1, 2, 3};
@@ -28,147 +28,42 @@ public class KMACXOF256 {
         String S = "Email Signature";
         int L = 512;
 
-        //Encoded bytepad of N and S strings.
-        //TODO this is not 200 length per spec, but when i set it to correct length, wrong output
-        byte[] temp = bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
-                        encodeString(Util.ASCIIStringToBytes(S))),136);
+        System.out.println("T3:");
+        UserInterface.printByteArrayAsHex(cSHAKE256(d, L, N, S));
 
-        //makes temp 200 length
-//        temp = Util.cat(temp,new byte[64]);
-//        UserInterface.printByteArrayAsHex(temp);
-//        System.out.println(temp.length);
+        d = new byte[200];
+        for (int i = 0; i < 200; i++) {
+            d[i] = (byte) i;
+        }
 
-        System.out.println("TEST 3:");
+        System.out.println("\n\nT4:");
+        UserInterface.printByteArrayAsHex(cSHAKE256(d, L, N, S));
 
-        //1. init
+    }
+
+    /**
+     * Handles cSHAKE256 implementation, if N&S are empty uses SHAKE256 instead as per spec.
+     * @param X data input as byte array.
+     * @param L desired output bit-length from cSHAKE.
+     * @param N Name of calling function.
+     * @param S Customization bitstring.
+     * @return byte array of encoded data.
+     */
+    static byte[] cSHAKE256(final byte[] X, final int L, final String N, final String S) {
+        //SHAKE if (N.isEmpty() && S.isEmpty()), cSHAKE if !(N.isEmpty() && S.isEmpty())
+        ShaObject sha = new ShaObject(!(N.isEmpty() && S.isEmpty()));
+
+        byte[] nsbytepad = bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
+                encodeString(Util.ASCIIStringToBytes(S))), 136);
+
         sha.shake256_init();
-
-        System.out.println("About to Absorb data NS:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //2. feed in bytepad NS
-        sha.sha3_update(temp,temp.length); //correct data, wrong length, but correct length makes output bad
-
-        System.out.println("After Update NS:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //3. feed bytepad: data
-        //TODO this is not the correct data but produces correct output LOL
-        sha.sha3_update(d,d.length); //data given: {0,1,2,3}, should be: {0,1,2,3,4,0,...,80,...,0} 200 length.
-
-        System.out.println("After Update data:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //4. xof
-        sha.shake_xof(); //just kinda put this here, and it seems to do good stuff.
-
-        System.out.println("After XOF:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //5. outval
+        sha.sha3_update(nsbytepad, nsbytepad.length);
+        sha.sha3_update(X, X.length);
+        sha.shake_xof();
         byte[] res = new byte[L >>> 3];
         sha.shake_out(res, L >>> 3);
 
-        System.out.println("Outval:");
-        UserInterface.printByteArrayAsHex(res);
-
-        /*
-        spacer comment so it's easier to spot test 4.
-        Below is not as commented as above, but it's all the same ideas, except with multiple data rounds.
-         */
-
-        System.out.println("\n\nTEST 4:");
-        sha = new ShaObject(true);
-
-        //1. init
-        sha.shake256_init();
-
-        System.out.println("About to Absorb data NS:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //2. feed in bytepad NS
-        sha.sha3_update(temp,temp.length);
-
-        System.out.println("After Update NS:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //3. feed bytepad: data: part 1
-        //hardcoded data generation
-        d = new byte[200];
-        for (int i = 0; i < 136; i++) {
-            d[i] = (byte) i;
-        }
-        sha.sha3_update(d,d.length);
-
-        System.out.println("After Update data 1:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //4. feed bytepad: data: part 2
-        //hardcoded data generation
-        d = new byte[200];
-        for (int i = 136; i < 200; i++) {
-            d[i-136] = (byte) i;
-        }
-        d[64] = (byte) 4;
-        d[135] = (byte) 128;
-        sha.sha3_update(d,d.length);
-
-        System.out.println("After Update data 2:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //5. xof
-        sha.shake_xof();
-
-        System.out.println("After XOF:");
-        UserInterface.printByteArrayAsHex(sha.sa.array());
-
-        //6. outval
-        res = new byte[L >>> 3];
-        sha.shake_out(res, L >>> 3);
-
-        System.out.println("Outval:");
-        UserInterface.printByteArrayAsHex(res);
-
-        /*
-        Old.
-         */
-//        byte[] res = cSHAKE256(d, 512, "", "Email Signature");
-//        System.out.println("Outval is:");
-//        UserInterface.printByteArrayAsHex(res);
-//
-//        System.out.println("\n\nTest Case #4:");
-//        d = new byte[200];
-//        for (int i = 0; i < 200; i++) {
-//            d[i] = (byte) i;
-//        }
-//        res = cSHAKE256(d, 512, "", "Email Signature");
-//        System.out.println("Outval is:");
-//        UserInterface.printByteArrayAsHex(res);
-    }
-
-    static byte[] cSHAKE256(final byte[] X, final int L, final String N, final String S) {
-        if (N.isEmpty() && S.isEmpty()) {
-            return ShaObject.shake256(X, L, false);
-        }
-        //return KECCAK[512](bytepad(encode_string(N) || encode_string(S), 136) || X || 00, L).
-        BigInteger bi = new BigInteger(Util.cat(
-                bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
-                        encodeString(Util.ASCIIStringToBytes(S))), 136), X)).shiftLeft(2);
-
-        //TODO debug
-        System.out.println("N as bytes:");
-        UserInterface.printByteArrayAsHex(Util.ASCIIStringToBytes(N));
-        System.out.println("Encoded N:");
-        UserInterface.printByteArrayAsHex(encodeString(Util.ASCIIStringToBytes(N)));
-        System.out.println("Encoded S:");
-        UserInterface.printByteArrayAsHex(encodeString(Util.ASCIIStringToBytes(S)));
-        System.out.println("bytepad data:");
-        UserInterface.printByteArrayAsHex(bytepad(Util.cat(encodeString(Util.ASCIIStringToBytes(N)),
-                encodeString(Util.ASCIIStringToBytes(S))), 136));
-        System.out.println("BI to bytes:");
-        UserInterface.printByteArrayAsHex(Util.bigIntegerToBytes(bi));
-
-        return ShaObject.shake256(Util.bigIntegerToBytes(bi), L, true);
+        return res;
     }
 
     static byte[] bytepad(final byte[] X, final int w) {

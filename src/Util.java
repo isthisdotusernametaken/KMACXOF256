@@ -59,12 +59,27 @@ public class Util {
         return result;
     }
 
-    static byte[] cat(final byte[] bytes, final byte newByte, final boolean prepend) {
-        final byte[] result = new byte[bytes.length + 1];
+    /**
+     * Generates byte array with prepended length byte values.
+     * @param rawInput raw String input.
+     * @return byte array of encoded length prepended with contents of string.
+     */
+    static byte[] stringToFormattedBytes(final String rawInput) {
+        return KMACXOF256.encodeString(Util.ASCIIStringToBytes(rawInput));
+    }
 
-        System.arraycopy(result, 0, bytes, prepend ? 1 : 0, bytes.length);
-        result[prepend ? 0 : bytes.length - 1] = newByte;
+    /**
+     * Turn a byte[] into formatted hex string array to make it look pretty.
+     * @param pSourceByteArray source byte[] to format.
+     * @return string[] of hex representation for byte[].
+     */
+    static String[] byteArrayToHexStringArray(final byte[] pSourceByteArray) {
+        String[] output = new String[pSourceByteArray.length];
 
-        return result;
+        for (int i = 0; i < pSourceByteArray.length; i++) {
+            output[i] = String.format("%02X ", pSourceByteArray[i]);
+        }
+
+        return output;
     }
 }
