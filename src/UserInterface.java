@@ -16,6 +16,7 @@ public class UserInterface {
             2: Compute authentication tag (MAC)
             3: Encrypt data symmetrically with passphrase
             4: Decrypt symmetric cryptogram with passphrase
+            5: Test included functionality
             0: Exit""";
 
     /** Hash Menu Options. */
@@ -99,12 +100,13 @@ public class UserInterface {
      * Choice handler for main menu.
      * @param pChoice choice in menu.
      */
-    static void mainMenuHandler(final int pChoice) {
+    private static void mainMenuHandler(final int pChoice) {
         switch (pChoice) {
             case 1 -> iCurrentMenu = HASH_MENU;
             case 2 -> iCurrentMenu = AUTH_MENU;
             case 3 -> encryptMenuHandler();
             case 4 -> decryptMenuHandler();
+            case 5 -> testMenuHandler();
             case 0 -> {
                 System.out.println("Goodbye.");
                 iKeepGoing = false;
@@ -118,7 +120,7 @@ public class UserInterface {
      * Navigation of hash menu.
      * @param pChoice choice in menu.
      */
-    static void hashMenuHandler(final int pChoice) {
+    private static void hashMenuHandler(final int pChoice) {
         switch (pChoice) {
             case 1 -> hashFromFile();
             case 2 -> hashFromInput();
@@ -131,7 +133,7 @@ public class UserInterface {
     /**
      * Functionality for obtaining cryptographic hash of a file.
      */
-    static void hashFromFile() {
+    private static void hashFromFile() {
         //say hello, get input.
         System.out.println(HASH_MENU.substring(0, 28));
         System.out.println(FILE_INPUT_PROMPT);
@@ -157,7 +159,7 @@ public class UserInterface {
     /**
      * Functionality for obtaining cryptographic hash of user input.
      */
-    static void hashFromInput() {
+    private static void hashFromInput() {
         //say hello, get input.
         System.out.println(HASH_MENU.substring(0, 28));
         System.out.println(TEXT_INPUT_PROMPT);
@@ -178,7 +180,7 @@ public class UserInterface {
      * Navigation of auth tag menu.
      * @param pChoice choice in menu.
      */
-    static void authMenuHandler(final int pChoice) {
+    private static void authMenuHandler(final int pChoice) {
         switch (pChoice) {
             case 1 -> authFromFile();
             case 2 -> authFromInput();
@@ -191,7 +193,7 @@ public class UserInterface {
     /**
      * Functionality for obtaining auth tag of a file.
      */
-    static void authFromFile() {
+    private static void authFromFile() {
         System.out.println(AUTH_MENU.substring(0, 34));
         System.out.println(FILE_INPUT_PROMPT);
         String rawInput = TEIN.nextLine();
@@ -220,7 +222,7 @@ public class UserInterface {
     /**
      * Functionality for obtaining auth tag of user input.
      */
-    static void authFromInput() {
+    private static void authFromInput() {
         System.out.println(AUTH_MENU.substring(0, 34));
         System.out.println(TEXT_INPUT_PROMPT);
         String rawInput = TEIN.nextLine();
@@ -242,7 +244,7 @@ public class UserInterface {
     /**
      * Functionality for encryption of file.
      */
-    static void encryptMenuHandler() {
+    private static void encryptMenuHandler() {
         System.out.println(ENCRYPT_MENU);
         System.out.println(FILE_INPUT_PROMPT);
         String rawInput = TEIN.nextLine();
@@ -275,7 +277,7 @@ public class UserInterface {
     /**
      * Functionality for decryption of file.
      */
-    static void decryptMenuHandler() {
+    private static void decryptMenuHandler() {
         System.out.println(DECRYPT_MENU);
         System.out.println("Input filename given during encryption process:");
         String rawInput = TEIN.nextLine();
@@ -314,6 +316,15 @@ public class UserInterface {
         iCurrentMenu = MAIN_MENU;
     }
 
+    /**
+     * Runs included test suite for functionality.
+     */
+    private static void testMenuHandler() {
+        System.out.println("Running included tests.");
+        TestValidity.runTests();
+        iCurrentMenu = MAIN_MENU;
+    }
+
     /* Helper functions. */
 
     /**
@@ -321,7 +332,7 @@ public class UserInterface {
      * @param pInput String input from user.
      * @return menu choice if valid input, -1 otherwise.
      */
-    static int parseMenuInput(final String pInput) {
+    private static int parseMenuInput(final String pInput) {
         int res = -1;
         try {
             res = Integer.parseInt(pInput);
@@ -357,7 +368,7 @@ public class UserInterface {
      *
      * @see <a href="https://stackoverflow.com/questions/2979383/java-clear-the-console">java clear the console</a>
      */
-    public static void clearScreen() {
+    private static void clearScreen() {
         try { //windows
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
         } catch (Exception e) { //mac and linux

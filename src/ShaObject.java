@@ -1,6 +1,5 @@
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
-import java.util.Arrays;
 
 public class ShaObject {
 
@@ -98,44 +97,4 @@ public class ShaObject {
         }
         this.pt = j;
     }
-
-    /**
-     * Example usage of SHAKE256 directly, code converted from the tiny_sha3 main method.
-     * @param args unused.
-     */
-    public static void main(String[] args) {
-        ShaObject sha3 = new ShaObject(false);
-        byte[] buf = new byte[32];
-
-        for (int i = 0; i < 2; i++) {
-
-            sha3.shake256_init();
-
-            if (i == 1) { // 1600-bit test pattern
-                Arrays.fill(buf, 0, 20, (byte) 0b10100011);
-                for (int j = 0; j < 200; j += 20)
-                    sha3.shake_update(buf, 20);
-            }
-
-            for (int j = 0; j < sha3.sa.capacity(); j++) {
-                System.out.print(String.format("%02X", sha3.sa.get(j)) + ':');
-            } System.out.print("\nAfter message added\n");
-
-            sha3.shake_xof();
-
-            for (int j = 0; j < sha3.sa.capacity(); j++) {
-                System.out.print(String.format("%02X", sha3.sa.get(j)) + ':');
-            } System.out.print("\nAfter shakexof\n");
-
-            for (int j = 0; j < 512; j += 32)   // output. discard bytes 0..479
-                sha3.shake_out(buf, 32);
-
-            for (int j = 0; j < sha3.sa.capacity(); j++) {
-                System.out.print(String.format("%02X", sha3.sa.get(j)) + ':');
-            } System.out.print("\nAfter shakeout\n");
-
-            System.out.println("\nENDFOR\n");
-        }
-    }
-
 }

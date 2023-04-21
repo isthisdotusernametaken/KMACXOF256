@@ -77,47 +77,4 @@ public class KMACXOF256 {
 
         return bytesOfO;
     }
-
-    /**
-     * Example usage of cSHAKE without KMACXOF256 involved.
-     * Tests run are examples 3 and 4 from provided NIST test vector documentation.
-     * @param args unused
-     */
-    public static void main(final String[] args) {
-        //Required things to make tests happen.
-        //ShaObject sha = new ShaObject(true);
-        byte[] d = {0, 1, 2, 3};
-        String N = "";
-        String S = "Email Signature";
-        int L = 512;
-
-        System.out.println("T3:");
-        UserInterface.printByteArrayAsHex(cSHAKE256(d, L, N, S));
-
-        d = new byte[200];
-        for (int i = 0; i < 200; i++) {
-            d[i] = (byte) i;
-        }
-
-        System.out.println("\n\nT4:");
-        UserInterface.printByteArrayAsHex(cSHAKE256(d, L, N, S));
-
-        //KMACX tests
-
-        System.out.println("\n\nK4:");
-        byte[] k = new byte[32];
-        byte[] x = {0,1,2,3};
-        for (int i = 0; i < 32; i++) {
-            k[i] = (byte) (i+64);
-        }
-        String s = "My Tagged Application";
-
-        UserInterface.printByteArrayAsHex(runKMACXOF256(k,x,L,s));
-
-        System.out.println("\n\nK5:");
-        UserInterface.printByteArrayAsHex(runKMACXOF256(k,d,L,""));
-
-        System.out.println("\n\nK6:");
-        UserInterface.printByteArrayAsHex(runKMACXOF256(k,d,L,s));
-    }
 }
