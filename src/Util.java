@@ -28,18 +28,6 @@ public class Util {
         return asBytes;
     }
 
-    static String bytesToByteSpacedHexString(final byte[] bytes) {
-        var builder = new StringBuilder();
-
-        for (byte b : bytes)
-            builder.append(HEX_CHARS[(b >>> 4) & 0x0F]).append(HEX_CHARS[b & 0x0F])
-                   .append(' ');
-
-        return bytes.length == 0 ?
-               "" :
-               builder.deleteCharAt(builder.length() - 1).toString();
-    }
-
     /**
      * Byte array concat for variable amounts of byte arrays.
      * @param sourceArrays array of source byte arrays.
@@ -65,15 +53,6 @@ public class Util {
 
         System.arraycopy(sourceArray, 0, destinationArrays[0], 0, sourceArray.length / 2);
         System.arraycopy(sourceArray, sourceArray.length / 2, destinationArrays[1], 0, sourceArray.length / 2);
-    }
-
-    /**
-     * Generates byte array with prepended length byte values.
-     * @param rawInput raw String input.
-     * @return byte array of encoded length prepended with contents of string.
-     */
-    static byte[] stringToFormattedBytes(final String rawInput) {
-        return KMACXOF256.encodeString(Util.ASCIIStringToBytes(rawInput));
     }
 
     /**

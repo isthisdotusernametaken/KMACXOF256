@@ -1,6 +1,6 @@
 import java.nio.LongBuffer;
 
-public class Keccak {
+public class Keccak { //TODO source tiny_sha3
 
     private static final long[] keccakFRNDC = {
             0x0000000000000001L, 0x0000000000008082L, 0x800000000000808aL,

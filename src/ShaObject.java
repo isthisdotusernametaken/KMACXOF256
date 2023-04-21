@@ -1,7 +1,7 @@
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
-public class ShaObject {
+public class ShaObject { //TODO document tiny_sha3 sourcing.
 
     /** Current state. */
     public ByteBuffer sa;
@@ -54,21 +54,6 @@ public class ShaObject {
             }
         }
         this.pt = j;
-    }
-
-// finalize and output a hash
-    void sha3_final(byte[] md) {
-        byte temp = (byte) (sa.get(this.pt) ^ (byte) 0x06);
-        this.sa.put(this.pt, temp);
-
-        temp = (byte) (sa.get(this.rsiz - 1) ^ (byte) 0x80);
-        this.sa.put(this.rsiz - 1, temp);
-
-        Keccak.keccakF(sa.asLongBuffer());
-
-        for (int i = 0; i < this.mdlen; i++) {
-            md[i] = this.sa.get(i);
-        }
     }
 
 // SHAKE128 and SHAKE256 extensible-output functionality.

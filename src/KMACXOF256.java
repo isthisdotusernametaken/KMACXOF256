@@ -40,7 +40,7 @@ public class KMACXOF256 {
         return res;
     }
 
-    static byte[] bytepad(final byte[] X, final int w) {
+    static byte[] bytepad(final byte[] X, final int w) { //TODO source burrito
         final byte[] leftEncodedW = leftEncode(Util.bigIntegerToBytes(BigInteger.valueOf(w)));
         final byte[] z = new byte[((leftEncodedW.length + X.length + (w - 1)) / w) * w];
 

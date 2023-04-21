@@ -1,10 +1,5 @@
 import java.util.Scanner;
 
-    /* TODO - office hour
-    -error checking, aka -w is impossible?
-    -verify output
-     */
-
 public class UserInterface {
 
     /* Menu Text. */
