@@ -4,7 +4,7 @@ This project implements KMACXOF256 for use of:
 * Computing a cryptographic hash of a given file or console input
 * Computing an authentication tag (MAC) of a given file or console input with given passphrase.
 * Encrypting a given file symmetrically with a given passphrase.
-* Decrypying a given symmetric cryptogram with a given passphrase.
+* Decrypting a given symmetric cryptogram with a given passphrase.
 
 The details of each function and how to use this project are given below.
 
