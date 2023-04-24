@@ -70,7 +70,7 @@ Group members are noted by their initials, JB: Joshua Barbee, JD: James Deal.
   * Functions are present to assist KMACXOF256 in properly setting up byte arrays. JB.
     * bytepad, leftEncode, rightEncode, encodeString
 * ShaObject
-  * SHA-3 and SHAKE256 functionality. There is not currently a way for a user to recieve pure SHA-3 output, all properly completed output from this file is SHAKE.
+  * SHA-3 and SHAKE256 functionality. There is not currently a way for a user to recieve pure SHA-3 output, all properly completed output from this file is SHAKE. JB, JD.
   * The functionality and structure of this file are heavily influenced and based from the tiny_sha3 resource. JB, JD.
   * State is stored in a ByteBuffer to allow for the contents to be called as both byte and long format. JB, JD.
 * Keccak
