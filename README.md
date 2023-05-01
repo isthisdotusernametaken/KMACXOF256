@@ -2,22 +2,30 @@
 
 This project implements KMACXOF256 for use of:
 * Computing a cryptographic hash of a given file or console input
-* Computing an authentication tag (MAC) of a given file or console input with given passphrase.
+* Computing an authentication tag (MAC) of a given file or console input with a passphrase from the console.
 * Encrypting a given file symmetrically with a given passphrase.
 * Decrypting a given symmetric cryptogram with a given passphrase.
 
 The details of each function and how to use this project are given below.
 
 ## How to use
-This is a Java project and presented as .java files, not compiled. The main method to start the program from exists in the Main class, and there are no other main methods present in the project. To run, either compile the project manually or use an IDE such as IntelliJ and run the main method present in Main. Interaction with this program is done completely through the console.
+This is a Java project and is presented as .java files, not compiled. The main method to start the program from exists in the Main class, and there are no other main methods present in the project. To run, either compile the project manually or use an IDE such as IntelliJ and run the main method present in Main. Interaction with this program is done completely through the console.
 ### Navigation
-When run, the program provides a main menu for the suite of options available. The main menu offers each functionality, as well as the ability to run the provided tests for the cryptographic machinery. To choose a menu option, type the number associated with the function and press enter. The option to quit is also available from the main menu as an option. Some features have sub menus, such as for computing authentication tags. In these cases there is also an option for returning to the main menu.
+When run, the program provides a main menu for the suite of options available. The main menu offers each functionality, as well as the ability to run the provided tests for the cryptographic machinery. To choose a menu option, type the number associated with the function and press enter. The option to quit is also available from the main menu. Some features have sub menus, such as for computing authentication tags. In these cases there is also an option for returning to the main menu.
+### Computing a plain cryptographic hash
+From the main menu, select the cryptographic hash option, and then select the option for using either an existing file or text typed in the console as the input data. Enter the path of the input file or the immediate text input as directed. The resulting hash value will be printed to the console.
+### Computing an authentication tag (MAC) with a given passphrase
+From the main menu, select the MAC option, and then select the option for using either an existing file or text typed in the console as the input data. Enter the path of the input file or the immediate text input as directed. Next enter a passphrase under which to compute the authentication tag. The resulting MAC will be printed to the console.
+### Encrypting a data file symmetrically with a given passphrase
+From the main menu, select the encryption option. Enter the path of the input file and then the immediate text of the passphrase as directed. Enter a name — possibly including a full filepath — for the cryptogram (a name not previously used for encryption, or the existing cryptogram with that name may be overwritten); this name will be used later for decryption. The application will save the resulting cryptogram as three separate files in the location specified by the cryptogram name.
+### Decrypting a symmetric cryptogram with a given passphrase
+From the main menu, select the decryption option. Enter the exact same name that was provided for a cryptogram generated with the application's encryption mode. Enter the exact same passphrase provided when the cryptogram was created, and enter the path of the output file to be created. A message will be printed to the console to indicate whether the provided passphrase is correct for the specified cryptogram, and the decrypted data will be stored in the specified output file if the passphrase is correct.
 ### File input and output
-File input is done by typing the name of the file into the console when prompted.
+File input is done by typing the name of the file (relative to the execution directory, or as a fully qualified path) into the console when prompted.
 
 When encrypting a file, three output bin files are generated, each beginning with a name defined by the user, and ending with a unique character.
 
-To decrypt a file, each file must be in the same location as each other, as the user is only prompted for the part of the filename they defined during the encryption process, not the unique ending characters. The program then looks for each file in turn. If successful, decryption generates one output file, with a name defined by the user. The name defined for output must also include the desired filetype, as encryption does not retain this information.
+To decrypt a file, the files generated during encryption must be in the same folder as each other, as the user is only prompted for the part of the filename they defined during the encryption process, not the unique ending characters. The program then looks for each file in turn. If successful, decryption generates one output file, with a name defined by the user. The name defined for output must also include the desired file extension, as encryption does not retain this information.
 ### Example usage
 User input is highlighted in green, program output is in black. The small "FF" character present is  a location where the console would clear if ran from a proper terminal instead of through an IDE's environment.
 
@@ -38,7 +46,7 @@ Running the included functionality tests:
 <img src="https://cdn.discordapp.com/attachments/149944536871731200/1099954410488086598/image.png" alt="testing">
 
 ## Description of Project Structure
-This section describes each piece of functionality within the project listed per individual file present in project, and which group member worked on each given function. Each file's functionality is categorized by if it is meant for user interaction/utility, or if it is core functionality to the cryptography itself.
+This section describes each piece of functionality within the project listed per individual file present in project, and which group member worked on each given function. Each file's functionality is categorized by whether it is meant for user interaction/utility, or if it is core functionality to the cryptography itself.
 
 Group members are noted by their initials, JB: Joshua Barbee, JD: James Deal.
 ### Interaction and Utility Functionality
@@ -74,10 +82,10 @@ Group members are noted by their initials, JB: Joshua Barbee, JD: James Deal.
   * The functionality and structure of this file are heavily influenced and based from the tiny_sha3 resource. JB, JD.
   * State is stored in a ByteBuffer to allow for the contents to be called as both byte and long format. JB, JD.
 * Keccak
-  * The Keccak core that ShaObject depends on to function. Contains the functionality necessary to enact the Keccak algorithm. JB.
+  * The Keccak core round function (Keccak-f) that ShaObject depends on to function. Contains the functionality necessary to enact the Keccak algorithm. JB.
   * Able to swap the endian of input and output for interaction with ShaObject. JB.
 ## Resources
 1. [Dr. Markku-Juhani O. Saarinen: tiny_sha3](https://github.com/mjosaarinen/tiny_sha3)
 2. [NIST Documentation: cSHAKE256 Test Vectors](https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/cSHAKE_samples.pdf)
-3. [NIST Documentation: KMACXOF256 Test Vectors](TODO)
+3. [NIST Documentation: KMACXOF256 Test Vectors](https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/KMACXOF_samples.pdf)
 4. [NIST Special Publication 800-185](https://dx.doi.org/10.6028/NIST.SP.800-185)

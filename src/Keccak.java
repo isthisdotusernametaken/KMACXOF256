@@ -1,6 +1,10 @@
+// This class' methods and other content for the Keccak-f function are directly
+// adapted from Markku-Juhani Saarinen’s C implementation:
+// https://github.com/mjosaarinen/tiny_sha3/blob/master/sha3.c
+
 import java.nio.LongBuffer;
 
-public class Keccak { //TODO source tiny_sha3
+public class Keccak {
 
     private static final long[] keccakFRNDC = {
             0x0000000000000001L, 0x0000000000008082L, 0x800000000000808aL,

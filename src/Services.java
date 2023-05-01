@@ -1,3 +1,7 @@
+// The following methods for the required cryptographic functionalities are
+// adapted directly from the pseudocode given for these features in the
+// assignment description.
+
 import java.security.SecureRandom;
 import java.util.Arrays;
 

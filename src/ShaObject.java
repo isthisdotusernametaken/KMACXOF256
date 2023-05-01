@@ -1,7 +1,11 @@
+// This class' methods for implementing SHA-3 and SHA-3 derived operations are
+// directly adapted from Markku-Juhani Saarinen’s C implementation:
+// https://github.com/mjosaarinen/tiny_sha3/blob/master/sha3.c
+
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
-public class ShaObject { //TODO document tiny_sha3 sourcing.
+public class ShaObject {
 
     /** Current state. */
     public ByteBuffer sa;

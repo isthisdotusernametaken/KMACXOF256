@@ -1,3 +1,12 @@
+// The cSHAKE256 and bytepad functions are partially based on the example code
+// from the course's Canvas page:
+// https://canvas.uw.edu/courses/1642546/files/104776117
+//
+// The remaining methods are based on the pseudocode for the functions of the
+// same names (adapted to standard Java naming conventions) given in NIST
+// Special Publication 800-185:
+// https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-185.pdf
+
 import java.math.BigInteger;
 
 public class KMACXOF256 {
