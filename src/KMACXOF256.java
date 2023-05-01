@@ -9,6 +9,9 @@
 
 import java.math.BigInteger;
 
+/**
+ * @author Joshua Barbee, James Deal
+ */
 public class KMACXOF256 {
 
     /**

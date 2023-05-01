@@ -4,6 +4,9 @@
 
 import java.nio.LongBuffer;
 
+/**
+ * @author Joshua Barbee
+ */
 public class Keccak {
 
     private static final long[] keccakFRNDC = {

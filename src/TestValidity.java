@@ -1,5 +1,8 @@
 import java.util.Arrays;
 
+/**
+ * @author James Deal
+ */
 public class TestValidity {
 
     /**

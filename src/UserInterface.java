@@ -1,5 +1,8 @@
 import java.util.Scanner;
 
+/**
+ * @author James Deal
+ */
 public class UserInterface {
 
     /* Menu Text. */

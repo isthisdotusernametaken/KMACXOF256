@@ -5,6 +5,9 @@
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 
+/**
+ * @author James Deal
+ */
 public class ShaObject {
 
     /** Current state. */
