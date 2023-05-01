@@ -18,7 +18,8 @@ public class TestValidity {
     }
 
     /**
-     * Runs the tests included tiny_sha3 for SHA256.
+     * Test suite for included SHA3 implementation.
+     * These tests are adapted from <a href="https://github.com/mjosaarinen/tiny_sha3/blob/master/sha3.c">Markku-Juhani Saarinen’s tiny_sha3</a>
      * @return whether tests were passed.
      */
     private static boolean testSHA() {
@@ -124,6 +125,7 @@ public class TestValidity {
 
     /**
      * Test suite for included cSHAKE256 functionality.
+     * These tests are adapted from <a href="https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/cSHAKE_samples.pdf">NIST's Test Vectors</a>
      * @return whether the tests were passed.
      */
     private static boolean testcSHAKE() {
@@ -165,6 +167,7 @@ public class TestValidity {
 
     /**
      * Test suite for included KMACXOF256 functionality.
+     * These tests are adapted from <a href="https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/KMACXOF_samples.pdf">NIST's Test Vectors</a>
      * @return whether the tests were passed.
      */
     private static boolean testKMACX() {
