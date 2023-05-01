@@ -1,5 +1,7 @@
 # TCSS487 - Cryptography Project
 
+This the project report for Joshua Barbee and James Deal.
+
 This project implements KMACXOF256 for use of:
 * Computing a cryptographic hash of a given file or console input
 * Computing an authentication tag (MAC) of a given file or console input with a passphrase from the console.
@@ -55,7 +57,7 @@ Group members are noted by their initials, JB: Joshua Barbee, JD: James Deal.
 * UserInterface
   * Console interaction with user is defined here, through a suite of methods and variables to handle menu navigation and user input. JD.
   * Printing byte arrays to the console as hex strings in a way which is readable, this functionality is used for user interaction. JD.
-  * File interaction is called here, but pairs with the FileIO class for file handling properly. JB,JD. 
+  * File interaction is called here, but pairs with the FileIO class for file handling properly. JB,JD.
 * FileIO
   * File handling, both reading in from a file to a byte array, and writing out to a file from a byte array. JB.
 * Util
@@ -83,6 +85,7 @@ Group members are noted by their initials, JB: Joshua Barbee, JD: James Deal.
   * State is stored in a ByteBuffer to allow for the contents to be called as both byte and long format. JB, JD.
 * Keccak
   * The Keccak core round function (Keccak-f) that ShaObject depends on to function. Contains the functionality necessary to enact the Keccak algorithm. JB.
+  * Functionality is from resource tiny_sha3.
   * Able to swap the endian of input and output for interaction with ShaObject. JB.
 ## Resources
 1. [Dr. Markku-Juhani O. Saarinen: tiny_sha3](https://github.com/mjosaarinen/tiny_sha3)

@@ -7,7 +7,6 @@ public class TestValidity {
 
     /**
      * Runs included testing functionality.
-     * TODO document test source.
      */
     public static void runTests() {
         String res = testSHA() ? "Passed" : "Failed";
