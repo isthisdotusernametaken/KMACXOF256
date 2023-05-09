@@ -43,7 +43,7 @@ public class FileIO {
             // First array (x1 bytes), Second array (x2 bytes), ..., Last array
             //      (xn bytes)
 
-            output.write(arrays.length);
+            output.write(Util.toBytes(arrays.length));
             for (var array : arrays)
                 output.write(Util.toBytes(array.length));
             for (var array : arrays)
