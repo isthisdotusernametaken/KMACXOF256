@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.util.Scanner;
 
 /**
@@ -15,6 +16,11 @@ public class UserInterface {
             3: Encrypt data symmetrically with passphrase
             4: Decrypt symmetric cryptogram with passphrase
             5: Test included functionality
+            6: Generate a Schnorr/DHIES key pair with passphrase
+            7: Encrypt using Schnorr/DHIES with key
+            8: Decrypt using Schnorr/DHIES with passphrase
+            9: Generate signature using Schnorr/DHIES with passphrase
+            10: Verify signature using Schnorr/DHIES with passphrase
             0: Exit""";
 
     /** Hash Menu Options. */
@@ -27,6 +33,20 @@ public class UserInterface {
     /** Auth Menu Options. */
     private static final String AUTH_MENU = """
             Function: Authentication Tag (MAC)
+            1: File input source
+            2: Direct input from terminal
+            0: Back to main menu""";
+
+    /** Hash Menu Options. */
+    private static final String SD_ENCRYPT_MENU = """
+            Function: Schnorr/DHIES Encryption
+            1: File input source
+            2: Direct input from terminal
+            0: Back to main menu""";
+
+    /** Hash Menu Options. */
+    private static final String SD_SIGN_MENU = """
+            Function: Schnorr/DHIES Signing
             1: File input source
             2: Direct input from terminal
             0: Back to main menu""";
@@ -78,13 +98,15 @@ public class UserInterface {
             System.out.println(MENU_INPUT_PROMPT);
 
             String rawInput = TEIN.nextLine();
-            clearScreen(); //TODO only usage of clearScreen(), if (not) desired.
+            clearScreen();
             choice = parseMenuInput(rawInput);
 
             switch (iCurrentMenu) {
                 case MAIN_MENU -> mainMenuHandler(choice);
                 case HASH_MENU -> hashMenuHandler(choice);
                 case AUTH_MENU -> authMenuHandler(choice);
+                case SD_ENCRYPT_MENU -> sdEncryptMenu(choice);
+                case SD_SIGN_MENU -> sdSigningMenu(choice);
                 default -> {
                     System.out.println("Error, current menu: " + iCurrentMenu);
                     return;
@@ -105,6 +127,11 @@ public class UserInterface {
             case 3 -> encryptMenuHandler();
             case 4 -> decryptMenuHandler();
             case 5 -> testMenuHandler();
+            case 6 -> sdKeyGenerate();
+            case 7 -> iCurrentMenu = SD_ENCRYPT_MENU;
+            case 8 -> sdDecryptHandler();
+            case 9 -> iCurrentMenu = SD_SIGN_MENU;
+            case 10 -> sdVerifySignature();
             case 0 -> {
                 System.out.println("Goodbye.");
                 iKeepGoing = false;
@@ -322,6 +349,125 @@ public class UserInterface {
         TestValidity.runTests();
         iCurrentMenu = MAIN_MENU;
     }
+
+    /** TODO beginning of new content
+     * Generates a Schnorr/DHIES key pair with a given passphrase.
+     */
+    private static void sdKeyGenerate() {
+        System.out.println(PASSPHRASE_INPUT_PROMPT);
+        String rawPwInput = TEIN.nextLine();
+        System.out.println("What should the output file be named:");
+        String outputName = TEIN.nextLine();
+
+        //services
+
+        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
+
+        byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
+
+        BigInteger sNum = new BigInteger(s).shiftLeft(2);
+
+        Ed448GoldilocksPoint V = Ed448GoldilocksPoint.G.multiply(sNum);
+
+        //end of services, start saving public key
+
+        byte[][] res = V.toBytes();
+
+        //FileIO.writeToFile(stuff);
+
+        //print success
+
+        //encrypt private and save
+        SymmetricCryptogram encPrivKey = Services.encrypt(sNum.toByteArray(), bytePw);
+
+        boolean writeSuccess = FileIO.writeToFile(encPrivKey.z(), outputName + "_z", true);
+        writeSuccess &= FileIO.writeToFile(encPrivKey.c(), outputName + "_c", true);
+        writeSuccess &= FileIO.writeToFile(encPrivKey.t(), outputName + "_t", true);
+
+        if (writeSuccess) {
+            System.out.println("Private key encrypted and saved using given passphrase.");
+        }
+    }
+
+    /**
+     * Navigation of Schnorr/DHIES Encrypt menu.
+     * @param pChoice choice in menu.
+     */
+    private static void sdEncryptMenu(final int pChoice) {
+        switch (pChoice) {
+            case 1 -> sdEncryptFromFile();
+            case 2 -> sdEncryptFromInput();
+            case 0 -> iCurrentMenu = MAIN_MENU;
+            case -1 -> System.out.print(""); //do nothing on purpose.
+            default -> System.out.println("Invalid choice: " + pChoice);
+        }
+    }
+
+    /**
+     * Encrypt file using Schnorr/DHIES.
+     */
+    private static void sdEncryptFromFile() {
+
+
+        iCurrentMenu = MAIN_MENU;
+    }
+
+    /**
+     * Encrypt terminal input using Schnorr/DHIES.
+     */
+    private static void sdEncryptFromInput() {
+
+
+        iCurrentMenu = MAIN_MENU;
+    }
+
+    /**
+     * Decrypt sd file from given passphrase and write to new file.
+     */
+    private static void sdDecryptHandler() {
+
+    }
+
+    /**
+     * Navigation of Schnorr/DHIES Signing menu.
+     * @param pChoice choice in menu.
+     */
+    private static void sdSigningMenu(final int pChoice) {
+        switch (pChoice) {
+            case 1 -> sdSignFile();
+            case 2 -> sdSignInput();
+            case 0 -> iCurrentMenu = MAIN_MENU;
+            case -1 -> System.out.print(""); //do nothing on purpose.
+            default -> System.out.println("Invalid choice: " + pChoice);
+        }
+    }
+
+    /**
+     * Sign file using Schnorr/DHIES with passphrase and write to new file.
+     */
+    private static void sdSignFile() {
+
+
+        iCurrentMenu = MAIN_MENU;
+    }
+
+    /**
+     * Sign user input using Schnorr/DHIES with passphrase and write to new file.
+     */
+    private static void sdSignInput() {
+
+
+        iCurrentMenu = MAIN_MENU;
+    }
+
+    /**
+     * Verify data file and signature file using given public key file.
+     */
+    private static void sdVerifySignature() {
+
+    }
+
+    //TODO end of new content
 
     /* Helper functions. */
 

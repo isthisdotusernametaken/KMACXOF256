@@ -20,7 +20,7 @@ public class ModularArithmetic {
         return minuend.subtract(subtrahend).mod(p);
     }
 
-    static BigInteger mult(final BigInteger ... factors) {
+    static BigInteger mult(final BigInteger... factors) {
          BigInteger acc = factors[0];
          for (int i = 1; i < factors.length; i++)
              acc = acc.multiply(factors[i]).mod(p);
@@ -37,6 +37,13 @@ public class ModularArithmetic {
     }
 
     static BigInteger sqrt(final BigInteger radicand, final boolean positive) {
-        return BigInteger.ONE; // Placeholder
+        if (radicand.signum() == 0)
+            return BigInteger.ZERO;
+
+        BigInteger res = radicand.modPow(p.shiftRight(2).add(BigInteger.ONE), p);
+        if (positive)
+            res = p.subtract(res);
+
+        return (res.multiply(res).subtract(radicand).mod(p).signum() == 0) ? res : null;
     }
 }
