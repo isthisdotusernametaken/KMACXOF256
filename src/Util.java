@@ -90,4 +90,25 @@ public class Util {
 
         return res;
     }
+
+    static byte[] toBytes(final int intVal) {
+        return new byte[]{
+                (byte) (intVal >>> 24),
+                (byte) (intVal >>> 16),
+                (byte) (intVal >>> 8),
+                (byte) intVal
+        };
+    }
+
+    static int toInt(final byte[] bytes) {
+        if (bytes.length != 4)
+            throw new IllegalArgumentException(
+                    "4 bytes must be provided for an int"
+            );
+
+        return ((((int) bytes[0]) & 0xFF) << 24) |
+               ((((int) bytes[1]) & 0xFF) << 16) |
+               ((((int) bytes[2]) & 0xFF) << 8) |
+               (((int) bytes[3]) & 0xFF);
+    }
 }
