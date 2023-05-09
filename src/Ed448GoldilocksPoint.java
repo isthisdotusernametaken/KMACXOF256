@@ -12,6 +12,10 @@ public class Ed448GoldilocksPoint {
         this.y = y;
     }
 
+    Ed448GoldilocksPoint(final byte[] x, final byte[] y) {
+        this(new BigInteger(x), new BigInteger(y));
+    }
+
     Ed448GoldilocksPoint(final BigInteger x, final boolean positive) {
         this(x, ModularArithmetic.sqrt(x, positive));
     }
@@ -58,5 +62,9 @@ public class Ed448GoldilocksPoint {
 
     boolean equals(Ed448GoldilocksPoint other) {
         return x.equals(other.x) && y.equals(other.y);
+    }
+
+    byte[][] toBytes() {
+        return new byte[][]{x.toByteArray(), y.toByteArray()};
     }
 }
