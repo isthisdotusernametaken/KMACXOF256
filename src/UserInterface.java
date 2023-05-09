@@ -360,22 +360,24 @@ public class UserInterface {
         String outputName = TEIN.nextLine();
 
         //services
-
         byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
-
         byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
-
         BigInteger sNum = new BigInteger(s).shiftLeft(2);
-
         Ed448GoldilocksPoint V = Ed448GoldilocksPoint.G.multiply(sNum);
 
         //end of services, start saving public key
+        if (FileIO.writeArraysToFile(outputName,V.toBytes())) {
+            System.out.println("Success, public key written to: " + outputName + ".bin");
+        } else {
+            System.out.println("File writing did not work right!");
+            return;
+        }
 
-        byte[][] res = V.toBytes();
-
-        //FileIO.writeToFile(stuff);
-
-        //print success
+        //TODO debug kill me later
+//        byte[][][] iWillReturnABoolean = new byte[1][][];
+//        FileIO.readArraysFromFile(iWillReturnABoolean,"noo");
+//        Ed448GoldilocksPoint booleanReturned = new Ed448GoldilocksPoint(iWillReturnABoolean[0][0],iWillReturnABoolean[0][1]);
+//        System.out.println(booleanReturned.equals(V));
 
         //encrypt private and save
         SymmetricCryptogram encPrivKey = Services.encrypt(sNum.toByteArray(), bytePw);
