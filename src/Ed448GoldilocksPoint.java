@@ -3,6 +3,9 @@ import java.math.BigInteger;
 public class Ed448GoldilocksPoint {
 
     private static final BigInteger d = BigInteger.valueOf(-39081L);
+    private static final BigInteger negativeD = BigInteger.valueOf(39081L);
+
+    static final Ed448GoldilocksPoint G = new Ed448GoldilocksPoint(BigInteger.valueOf(8L), true);
 
     final BigInteger x;
     final BigInteger y;
@@ -17,12 +20,27 @@ public class Ed448GoldilocksPoint {
     }
 
     Ed448GoldilocksPoint(final BigInteger x, final boolean positive) {
-        this(x, ModularArithmetic.sqrt(x, positive));
+        this(x, calculateY(x, positive));
     }
 
     // Neutral element
     Ed448GoldilocksPoint() {
         this(BigInteger.ZERO, BigInteger.ONE);
+    }
+
+    private static BigInteger calculateY(final BigInteger x, final boolean positive) {
+        final BigInteger xSquared = ModularArithmetic.mult(x, x);
+
+        return ModularArithmetic.sqrt(
+                ModularArithmetic.div(
+                        ModularArithmetic.sub(BigInteger.ONE, xSquared),
+                        ModularArithmetic.add(
+                                BigInteger.ONE,
+                                ModularArithmetic.mult(negativeD, xSquared)
+                        )
+                ),
+                positive
+        );
     }
 
     Ed448GoldilocksPoint negate() {
@@ -57,7 +75,7 @@ public class Ed448GoldilocksPoint {
     }
 
     Ed448GoldilocksPoint multiply(final BigInteger scalar) {
-        var V = this;
+        Ed448GoldilocksPoint V = this;
         for (int i = scalar.bitLength() - 1; i >= 0; i--) {
             V = V.add(V);
             if (scalar.testBit(i))
