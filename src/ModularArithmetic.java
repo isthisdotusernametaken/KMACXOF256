@@ -5,8 +5,8 @@ public class ModularArithmetic {
     private static final BigInteger r = BigInteger.TWO.pow(446)
                                         .subtract(new BigInteger(
                                                 "138180668098951153520073867" +
-                                                "4851542688033669247488217860989" +
-                                                "4547503885"
+                                                "485154268803366924748821786" +
+                                                "09894547503885"
                                         ));
     private static final BigInteger p = BigInteger.TWO.pow(448)
                                         .subtract(BigInteger.TWO.pow(224))

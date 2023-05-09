@@ -57,7 +57,14 @@ public class Ed448GoldilocksPoint {
     }
 
     Ed448GoldilocksPoint multiply(final BigInteger scalar) {
-        return new Ed448GoldilocksPoint(); // Placeholder
+        var V = this;
+        for (int i = scalar.bitLength() - 1; i >= 0; i--) {
+            V = V.add(V);
+            if (scalar.testBit(i))
+                V = V.add(this);
+        }
+
+        return V;
     }
 
     boolean equals(Ed448GoldilocksPoint other) {
