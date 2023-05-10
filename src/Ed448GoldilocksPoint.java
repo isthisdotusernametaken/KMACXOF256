@@ -19,8 +19,8 @@ public class Ed448GoldilocksPoint {
         this(new BigInteger(x), new BigInteger(y));
     }
 
-    Ed448GoldilocksPoint(final BigInteger x, final boolean odd) {
-        this(x, calculateY(x, odd));
+    Ed448GoldilocksPoint(final BigInteger x, final boolean lsb) {
+        this(x, calculateY(x, lsb));
     }
 
     // Neutral element
@@ -28,7 +28,7 @@ public class Ed448GoldilocksPoint {
         this(BigInteger.ZERO, BigInteger.ONE);
     }
 
-    private static BigInteger calculateY(final BigInteger x, final boolean odd) {
+    private static BigInteger calculateY(final BigInteger x, final boolean lsb) {
         final BigInteger xSquared = ModularArithmetic.mult(x, x);
 
         return ModularArithmetic.sqrt(
@@ -39,7 +39,7 @@ public class Ed448GoldilocksPoint {
                                 ModularArithmetic.mult(negativeD, xSquared)
                         )
                 ),
-                odd
+                lsb
         );
     }
 
