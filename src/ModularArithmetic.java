@@ -36,12 +36,12 @@ public class ModularArithmetic {
         return val.mod(r);
     }
 
-    static BigInteger sqrt(final BigInteger radicand, final boolean positive) {
+    static BigInteger sqrt(final BigInteger radicand, final boolean odd) {
         if (radicand.signum() == 0)
             return BigInteger.ZERO;
 
         BigInteger res = radicand.modPow(p.shiftRight(2).add(BigInteger.ONE), p);
-        if (positive)
+        if (res.testBit(0) != odd)
             res = p.subtract(res);
 
         return (res.multiply(res).subtract(radicand).mod(p).signum() == 0) ? res : null;
