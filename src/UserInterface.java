@@ -363,7 +363,7 @@ public class UserInterface {
         byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
         byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
         BigInteger sNum = new BigInteger(s).shiftLeft(2);
-        Ed448GoldilocksPoint V = Ed448GoldilocksPoint.G.multiply(sNum);
+        Ed448GoldilocksPoint V = Ed448GoldilocksPoint.G.publicMultiply(sNum);
 
         //end of services, start saving public key
         if (FileIO.writeArraysToFile(outputName,V.toBytes())) {

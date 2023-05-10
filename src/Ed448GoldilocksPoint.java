@@ -6,6 +6,7 @@ public class Ed448GoldilocksPoint {
     private static final BigInteger negativeD = BigInteger.valueOf(39081L);
 
     static final Ed448GoldilocksPoint G = new Ed448GoldilocksPoint(BigInteger.valueOf(8L), false);
+    private static final Ed448GoldilocksPoint G_TIMES_2 = G.add(G);
 
     final BigInteger x;
     final BigInteger y;
@@ -74,7 +75,7 @@ public class Ed448GoldilocksPoint {
         );
     }
 
-    Ed448GoldilocksPoint multiply(final BigInteger scalar) {
+    Ed448GoldilocksPoint publicMultiply(final BigInteger scalar) {
         Ed448GoldilocksPoint V = this;
         for (int i = scalar.bitLength() - 1; i >= 0; i--) {
             V = V.add(V);
@@ -85,11 +86,41 @@ public class Ed448GoldilocksPoint {
         return V;
     }
 
+    Ed448GoldilocksPoint privateMultiply(final BigInteger scalar) {
+        Ed448GoldilocksPoint[] R = {G, G_TIMES_2};
+        boolean swap = false;
+
+        for (int i = scalar.bitLength() - 1; i >= 0; i--) {
+            // R0, R1 = condswap(R0, R1, swap ⊕ si)
+            condSwap(R, swap != scalar.testBit(i));
+
+            // R0, R1 = 2R0, R0 + R1
+            R[0] = R[0].add(R[0]);
+            R[1] = R[0].add(R[1]);
+
+            // swap = si
+            swap = scalar.testBit(i);
+        }
+
+        // R0, R1 = condswap(R0, R1, swap)
+        condSwap(R, swap);
+
+        return R[0];
+    }
+
     boolean equals(Ed448GoldilocksPoint other) {
         return x.equals(other.x) && y.equals(other.y);
     }
 
     byte[][] toBytes() {
         return new byte[][]{x.toByteArray(), y.toByteArray()};
+    }
+
+    private void condSwap(final Ed448GoldilocksPoint[] R, final boolean swap) {
+        if (swap) {
+            var temp = R[0];
+            R[0] = R[1];
+            R[1] = temp;
+        }
     }
 }
