@@ -6,7 +6,6 @@ public class Ed448GoldilocksPoint {
     private static final BigInteger negativeD = BigInteger.valueOf(39081L);
 
     static final Ed448GoldilocksPoint G = new Ed448GoldilocksPoint(BigInteger.valueOf(8L), false);
-    private static final Ed448GoldilocksPoint G_TIMES_2 = G.add(G);
 
     final BigInteger x;
     final BigInteger y;
@@ -86,8 +85,9 @@ public class Ed448GoldilocksPoint {
         return V;
     }
 
+    // Montgomery point multiplication algorithm
     Ed448GoldilocksPoint privateMultiply(final BigInteger scalar) {
-        Ed448GoldilocksPoint[] R = {G, G_TIMES_2};
+        Ed448GoldilocksPoint[] R = {this, this.add(this)};
         boolean swap = false;
 
         for (int i = scalar.bitLength() - 1; i >= 0; i--) {
@@ -95,8 +95,8 @@ public class Ed448GoldilocksPoint {
             condSwap(R, swap != scalar.testBit(i));
 
             // R0, R1 = 2R0, R0 + R1
-            R[0] = R[0].add(R[0]);
             R[1] = R[0].add(R[1]);
+            R[0] = R[0].add(R[0]);
 
             // swap = si
             swap = scalar.testBit(i);
@@ -122,5 +122,12 @@ public class Ed448GoldilocksPoint {
             R[0] = R[1];
             R[1] = temp;
         }
+
+        // Definitely still insecure, since BigInteger uses array sizes based
+        // on the magnitude of the numbers (minimal 2's comp representation)
+//        BigInteger[] diff = {
+//                R[0].x.xor(R[1].x).and(BigInteger.ZERO), // or replace with constant for BigInteger.ONE.negate()
+//                R[0].y.xor(R[1].y).and(BigInteger.ZERO)
+//        };
     }
 }
