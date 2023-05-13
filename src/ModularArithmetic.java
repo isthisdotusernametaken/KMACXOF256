@@ -7,7 +7,7 @@ public class ModularArithmetic {
                                         "13818066809895115352007386748515426" +
                                         "880336692474882178609894547503885"
                                 ));
-    private static final BigInteger p = BigInteger.TWO.pow(448)
+    static final BigInteger p = BigInteger.TWO.pow(448)
                                         .subtract(BigInteger.TWO.pow(224))
                                         .subtract(BigInteger.ONE);
 
