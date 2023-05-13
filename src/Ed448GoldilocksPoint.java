@@ -6,6 +6,7 @@ public class Ed448GoldilocksPoint {
     private static final BigInteger negativeD = BigInteger.valueOf(39081L);
 
     static final Ed448GoldilocksPoint G = new Ed448GoldilocksPoint(BigInteger.valueOf(8L), false);
+    static final Ed448GoldilocksPoint O = new Ed448GoldilocksPoint();
 
     final BigInteger x;
     final BigInteger y;
@@ -24,7 +25,7 @@ public class Ed448GoldilocksPoint {
     }
 
     // Neutral element
-    Ed448GoldilocksPoint() {
+    private Ed448GoldilocksPoint() {
         this(BigInteger.ZERO, BigInteger.ONE);
     }
 
