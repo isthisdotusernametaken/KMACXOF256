@@ -76,6 +76,9 @@ public class Ed448GoldilocksPoint {
     }
 
     Ed448GoldilocksPoint publicMultiply(final BigInteger scalar) {
+        if (scalar.equals(BigInteger.ZERO))
+            return O;
+
         Ed448GoldilocksPoint V = this;
         for (int i = scalar.bitLength() - 1; i >= 0; i--) {
             V = V.add(V);
