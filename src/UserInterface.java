@@ -285,7 +285,7 @@ public class UserInterface {
         byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
 
         if (FileIO.readFromFile(fileContent, rawInput)) {
-            output = Services.encrypt(fileContent[0], bytePw);
+            output = Services.encryptSymm(fileContent[0], bytePw);
 
             boolean writeSuccess = FileIO.writeToFile(output.z(), outputName + "_z", true);
             writeSuccess &= FileIO.writeToFile(output.c(), outputName + "_c", true);
@@ -328,7 +328,7 @@ public class UserInterface {
         if (readStatus) {
             SymmetricCryptogram inData = new SymmetricCryptogram(z, c, t);
 
-            if (Services.decrypt(fileContent, inData, bytePw)) {
+            if (Services.decryptSymm(fileContent, inData, bytePw)) {
                 System.out.println("Decrypt successful.");
 
                 if (FileIO.writeToFile(fileContent[0], rawOutInput, false)) {
@@ -384,7 +384,7 @@ public class UserInterface {
 //        System.out.println(booleanReturned.equals(V));
 
         //encrypt private and save
-        SymmetricCryptogram encPrivKey = Services.encrypt(sNum.toByteArray(), bytePw);
+        SymmetricCryptogram encPrivKey = Services.encryptSymm(sNum.toByteArray(), bytePw);
 
         boolean writeSuccess = FileIO.writeToFile(encPrivKey.z(), outputName + "_z", true);
         writeSuccess &= FileIO.writeToFile(encPrivKey.c(), outputName + "_c", true);
