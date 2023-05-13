@@ -2,12 +2,11 @@ import java.math.BigInteger;
 
 public class ModularArithmetic {
 
-    private static final BigInteger r = BigInteger.TWO.pow(446)
-                                        .subtract(new BigInteger(
-                                                "138180668098951153520073867" +
-                                                "485154268803366924748821786" +
-                                                "09894547503885"
-                                        ));
+    static final BigInteger r = BigInteger.TWO.pow(446)
+                                .subtract(new BigInteger(
+                                        "13818066809895115352007386748515426" +
+                                        "880336692474882178609894547503885"
+                                ));
     private static final BigInteger p = BigInteger.TWO.pow(448)
                                         .subtract(BigInteger.TWO.pow(224))
                                         .subtract(BigInteger.ONE);
@@ -30,10 +29,6 @@ public class ModularArithmetic {
 
     static BigInteger div(final BigInteger dividend, final BigInteger divisor) {
         return dividend.multiply(divisor.modInverse(p)).mod(p);
-    }
-
-    static BigInteger modR(final BigInteger val) {
-        return val.mod(r);
     }
 
     static BigInteger sqrt(final BigInteger radicand, final boolean lsb) {
