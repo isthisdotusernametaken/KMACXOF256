@@ -90,27 +90,27 @@ public class Ed448GoldilocksPoint {
     }
 
     // Montgomery point multiplication algorithm
-    Ed448GoldilocksPoint privateMultiply(final BigInteger scalar) {
-        Ed448GoldilocksPoint[] R = {this, this.add(this)};
-        boolean swap = false;
-
-        for (int i = scalar.bitLength() - 2; i >= 0; i--) {
-            // R0, R1 = condswap(R0, R1, swap ⊕ si)
-            condSwap(R, swap != scalar.testBit(i));
-
-            // R0, R1 = 2R0, R0 + R1
-            R[1] = R[0].add(R[1]);
-            R[0] = R[0].add(R[0]);
-
-            // swap = si
-            swap = scalar.testBit(i);
-        }
-
-        // R0, R1 = condswap(R0, R1, swap)
-        condSwap(R, swap);
-
-        return R[0];
-    }
+//    Ed448GoldilocksPoint privateMultiply(final BigInteger scalar) {
+//        Ed448GoldilocksPoint[] R = {this, this.add(this)};
+//        boolean swap = false;
+//
+//        for (int i = scalar.bitLength() - 2; i >= 0; i--) {
+//            // R0, R1 = condswap(R0, R1, swap ⊕ si)
+//            condSwap(R, swap != scalar.testBit(i));
+//
+//            // R0, R1 = 2R0, R0 + R1
+//            R[1] = R[0].add(R[1]);
+//            R[0] = R[0].add(R[0]);
+//
+//            // swap = si
+//            swap = scalar.testBit(i);
+//        }
+//
+//        // R0, R1 = condswap(R0, R1, swap)
+//        condSwap(R, swap);
+//
+//        return R[0];
+//    }
 
     boolean equals(Ed448GoldilocksPoint other) {
         return x.equals(other.x) && y.equals(other.y);
@@ -120,18 +120,18 @@ public class Ed448GoldilocksPoint {
         return new byte[][]{x.toByteArray(), y.toByteArray()};
     }
 
-    private void condSwap(final Ed448GoldilocksPoint[] R, final boolean swap) {
-        if (swap) {
-            var temp = R[0];
-            R[0] = R[1];
-            R[1] = temp;
-        }
-
-        // Definitely still insecure, since BigInteger uses array sizes based
-        // on the magnitude of the numbers (minimal 2's comp representation)
-//        BigInteger[] diff = {
-//                R[0].x.xor(R[1].x).and(BigInteger.ZERO), // or replace with constant for BigInteger.ONE.negate()
-//                R[0].y.xor(R[1].y).and(BigInteger.ZERO)
-//        };
-    }
+//    private void condSwap(final Ed448GoldilocksPoint[] R, final boolean swap) {
+//        if (swap) {
+//            var temp = R[0];
+//            R[0] = R[1];
+//            R[1] = temp;
+//        }
+//
+//        // Definitely still insecure, since BigInteger uses array sizes based
+//        // on the magnitude of the numbers (minimal 2's comp representation)
+////        BigInteger[] diff = {
+////                R[0].x.xor(R[1].x).and(BigInteger.ZERO), // or replace with constant for BigInteger.ONE.negate()
+////                R[0].y.xor(R[1].y).and(BigInteger.ZERO)
+////        };
+//    }
 }
