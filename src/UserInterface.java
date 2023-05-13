@@ -364,6 +364,7 @@ public class UserInterface {
         byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
         byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
         BigInteger sNum = new BigInteger(s).shiftLeft(2);
+//        BigInteger sNum = ModularArithmetic.mult(new BigInteger(s), new BigInteger("4"));
         Ed448GoldilocksPoint V = Ed448GoldilocksPoint.G.publicMultiply(sNum);
 
         //end of services, start saving public key
@@ -376,12 +377,6 @@ public class UserInterface {
 
         System.out.println("Vx: " + V.x);
         System.out.println("Vy: " + V.y);
-
-        //TODO debug kill me later
-//        byte[][][] iWillReturnABoolean = new byte[1][][];
-//        FileIO.readArraysFromFile(iWillReturnABoolean,"noo");
-//        Ed448GoldilocksPoint booleanReturned = new Ed448GoldilocksPoint(iWillReturnABoolean[0][0],iWillReturnABoolean[0][1]);
-//        System.out.println(booleanReturned.equals(V));
 
         //encrypt private and save
         SymmetricCryptogram encPrivKey = Services.encryptSymm(sNum.toByteArray(), bytePw);
@@ -462,6 +457,7 @@ public class UserInterface {
         byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
         byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
         BigInteger sNum = new BigInteger(s).shiftLeft(2);
+//        BigInteger sNum = ModularArithmetic.mult(new BigInteger(s), new BigInteger("4"));
 
         byte[][] sourceFileContent = new byte[1][];
         if (!FileIO.readFromFile(sourceFileContent,sourceFile)) {
@@ -471,8 +467,11 @@ public class UserInterface {
 
         byte[] k =  KMACXOF256.runKMACXOF256(s, sourceFileContent[0], 512, "N");
         BigInteger kNum = new BigInteger(k).shiftLeft(2);
+//        BigInteger kNum = ModularArithmetic.mult(new BigInteger(k), new BigInteger("4"));
 
         Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(kNum);
+        //from verify signature:
+        //Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(z).add(V.publicMultiply(new BigInteger(h)));
 
         byte[] h = KMACXOF256.runKMACXOF256(U.x.toByteArray(), sourceFileContent[0], 512, "T");
 
