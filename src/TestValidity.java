@@ -1,3 +1,4 @@
+import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -17,6 +18,132 @@ public class TestValidity {
 
         res = testKMACX() ? "Passed" : "Failed";
         System.out.println("KMACXOF256 Core Tests " + res);
+
+        res = testPubG() ? "Passed" : "Failed";
+        System.out.println("Public Multiply Elliptic Curve Tests " + res);
+
+        res = testrandK() ? "Passed" : "Failed";
+        System.out.println("Random Value Elliptic Curve Tests " + res);
+    }
+
+    /**
+     * Test suite for included Ed448 Goldilocks Point implementation with Random numbers.
+     * These tests are adapted from provided project documentation.
+     * @return whether tests were passed.
+     */
+    static boolean testrandK() {
+        for (int i = 0; i < 11; i++) {
+            //k * G = (k mod r) * G
+            BigInteger k = ModularArithmetic.getRandK();
+
+            Ed448GoldilocksPoint kG = Ed448GoldilocksPoint.G.publicMultiply(k);
+            BigInteger kmr = k.mod(ModularArithmetic.r);
+            Ed448GoldilocksPoint kmrG = Ed448GoldilocksPoint.G.publicMultiply(kmr);
+
+            if (!kG.equals(kmrG)) {
+                System.out.println("kG != kmrG");
+                return false;
+            }
+
+            //(k + 1) * G = (k * G) + G
+            Ed448GoldilocksPoint k1G = Ed448GoldilocksPoint.G.publicMultiply(k.add(new BigInteger("1")));
+            Ed448GoldilocksPoint kGpG = Ed448GoldilocksPoint.G.publicMultiply(k).add(Ed448GoldilocksPoint.G);
+            if (!k1G.equals(kGpG)) {
+                System.out.println("k1G != kGpG");
+                return false;
+            }
+
+            //(k + t) * G = (k * G) + (t * G)
+            BigInteger t = new BigInteger(448, Util.RANDOM);
+            k1G = Ed448GoldilocksPoint.G.publicMultiply(k.add(t));
+            kGpG = Ed448GoldilocksPoint.G.publicMultiply(k).add(Ed448GoldilocksPoint.G.publicMultiply(t));
+            if (!k1G.equals(kGpG)) {
+                System.out.println("(k + t) * G != (k * G) + (t * G)");
+                return false;
+            }
+
+            //k * (t * G) = t * (k * G) = (k * t mod r) * G
+            Ed448GoldilocksPoint ktG = Ed448GoldilocksPoint.G.publicMultiply(t).publicMultiply(k);
+            Ed448GoldilocksPoint tkG = Ed448GoldilocksPoint.G.publicMultiply(k).publicMultiply(t);
+            BigInteger ktmr = k.multiply(t).mod(ModularArithmetic.r);
+            Ed448GoldilocksPoint ktmrG = Ed448GoldilocksPoint.G.publicMultiply(ktmr);
+            if (!ktG.equals(tkG)) {
+                System.out.println("k * (t * G) != t * (k * G)");
+                return false;
+            }
+            if (!tkG.equals(ktmrG)) {
+                System.out.println("t * (k * G) != (k * t mod r) * G");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Test suite for included Ed448 Goldilocks Point implementation.
+     * These tests are adapted from provided project documentation.
+     * @return whether tests were passed.
+     */
+    private static boolean testPubG() {
+        //0G = O
+        Ed448GoldilocksPoint localG = Ed448GoldilocksPoint.G.publicMultiply(new BigInteger("0"));
+
+        if (!localG.equals(Ed448GoldilocksPoint.O)) {
+            System.out.println("0 != 0");
+            return false;
+        }
+
+        //1G = G
+        localG = Ed448GoldilocksPoint.G.publicMultiply(new BigInteger("1"));
+
+        if (!localG.equals(Ed448GoldilocksPoint.G)) {
+            System.out.println("1 != 1");
+            return false;
+        }
+
+        //G - G = O
+        Ed448GoldilocksPoint negG = Ed448GoldilocksPoint.G.negate();
+        localG = localG.add(negG);
+
+        if (!localG.equals(Ed448GoldilocksPoint.O)) {
+            System.out.println("-x is equal to y-g-the square root of bacon");
+            return false;
+        }
+
+        //2G = G + G
+        Ed448GoldilocksPoint plusG = Ed448GoldilocksPoint.G.publicMultiply(new BigInteger("2"));
+        Ed448GoldilocksPoint multG = Ed448GoldilocksPoint.G.add(Ed448GoldilocksPoint.G);
+
+        if (!plusG.equals(multG)) {
+            System.out.println("2 != 2");
+            return false;
+        }
+
+        //4G = 2(2G)
+        Ed448GoldilocksPoint fourG = Ed448GoldilocksPoint.G.publicMultiply(new BigInteger("4"));
+        Ed448GoldilocksPoint twoG = Ed448GoldilocksPoint.G.publicMultiply(new BigInteger("2"))
+                                                            .publicMultiply(new BigInteger("2"));
+
+        if (!twoG.equals(fourG)) {
+            System.out.println("4 != 2*2");
+            return false;
+        }
+
+        //4G != O
+        if (fourG.equals(Ed448GoldilocksPoint.O)) {
+            System.out.println("4 == O");
+            return false;
+        }
+
+        //rG = O
+        localG = Ed448GoldilocksPoint.G.publicMultiply(ModularArithmetic.r);
+        if (!localG.equals(Ed448GoldilocksPoint.O)) {
+            System.out.println("rG != O");
+            return false;
+        }
+
+        return true;
     }
 
     /**

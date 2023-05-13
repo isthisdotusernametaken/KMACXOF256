@@ -41,4 +41,12 @@ public class ModularArithmetic {
 
         return (res.multiply(res).subtract(radicand).mod(p).signum() == 0) ? res : null;
     }
+
+    static BigInteger getRandK() {
+        BigInteger res = new BigInteger(448,Util.RANDOM);
+        while (res.compareTo(p) >= 0 || res.signum() == -1) {
+            res = new BigInteger(448,Util.RANDOM);
+        }
+        return res;
+    }
 }

@@ -94,7 +94,7 @@ public class Ed448GoldilocksPoint {
         Ed448GoldilocksPoint[] R = {this, this.add(this)};
         boolean swap = false;
 
-        for (int i = scalar.bitLength() - 1; i >= 0; i--) {
+        for (int i = scalar.bitLength() - 2; i >= 0; i--) {
             // R0, R1 = condswap(R0, R1, swap ⊕ si)
             condSwap(R, swap != scalar.testBit(i));
 
