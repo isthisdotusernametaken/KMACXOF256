@@ -1,9 +1,12 @@
 import java.math.BigInteger;
+import java.security.SecureRandom;
 
 /**
  * @author Joshua Barbee, James Deal
  */
 public class Util {
+
+    static final SecureRandom RANDOM = new SecureRandom();
 
     static byte[] ASCIIStringToBytes(final String ASCII) {
         var chars = ASCII.toCharArray();
