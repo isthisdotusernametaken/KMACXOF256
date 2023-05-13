@@ -1,4 +1,5 @@
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -373,6 +374,9 @@ public class UserInterface {
             return;
         }
 
+        System.out.println("Vx: " + V.x);
+        System.out.println("Vy: " + V.y);
+
         //TODO debug kill me later
 //        byte[][][] iWillReturnABoolean = new byte[1][][];
 //        FileIO.readArraysFromFile(iWillReturnABoolean,"noo");
@@ -409,7 +413,6 @@ public class UserInterface {
      * Encrypt file using Schnorr/DHIES.
      */
     private static void sdEncryptFromFile() {
-
 
         iCurrentMenu = MAIN_MENU;
     }
@@ -448,7 +451,46 @@ public class UserInterface {
      * Sign file using Schnorr/DHIES with passphrase and write to new file.
      */
     private static void sdSignFile() {
+        System.out.println(PASSPHRASE_INPUT_PROMPT);
+        String rawPwInput = TEIN.nextLine();
+        System.out.println("What should the output signature file be named:");
+        String outputName = TEIN.nextLine();
+        System.out.println("Source File to sign:");
+        String sourceFile = TEIN.nextLine();
 
+        //services
+        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
+        byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
+        BigInteger sNum = new BigInteger(s).shiftLeft(2);
+
+        byte[][] sourceFileContent = new byte[1][];
+        if (!FileIO.readFromFile(sourceFileContent,sourceFile)) {
+            System.out.println("File could not be read.");
+            return;
+        }
+
+        byte[] k =  KMACXOF256.runKMACXOF256(s, sourceFileContent[0], 512, "N");
+        BigInteger kNum = new BigInteger(k).shiftLeft(2);
+
+        Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(kNum);
+
+        byte[] h = KMACXOF256.runKMACXOF256(U.x.toByteArray(), sourceFileContent[0], 512, "T");
+
+//        BigInteger z = kNum.subtract(new BigInteger(h).multiply(sNum)).mod(ModularArithmetic.r);
+        BigInteger z = kNum.subtract(ModularArithmetic.mult(new BigInteger(h),sNum)).mod(ModularArithmetic.r);
+
+        System.out.println("h: " + Arrays.toString(h));
+        System.out.println("z: " + z);
+        System.out.println("Ux: " + U.x);
+        System.out.println("Uy: " + U.y);
+
+        //end of services, start saving public key
+        if (FileIO.writeArraysToFile(outputName, h, z.toByteArray())) {
+            System.out.println("Success! Signature written to: " + outputName + ".bin");
+        } else {
+            System.out.println("File writing did not work right!");
+            return;
+        }
 
         iCurrentMenu = MAIN_MENU;
     }
@@ -466,10 +508,56 @@ public class UserInterface {
      * Verify data file and signature file using given public key file.
      */
     private static void sdVerifySignature() {
+        System.out.println("Source File to check signature for:");
+        String sourceFile = TEIN.nextLine();
+        System.out.println("Signature file:");
+        String sigFile = TEIN.nextLine();
+        System.out.println("Public key file:");
+        String pubKeyFile = TEIN.nextLine();
 
+        byte[][][] sigData = new byte[1][][];
+        byte[][][] pubKey = new byte[1][][];
+        byte[][] sourceData = new byte[1][];
+
+        if (!FileIO.readArraysFromFile(sigData,sigFile)) {
+            System.out.println("Signature file could not be read.");
+            return;
+        }
+        byte[] h = sigData[0][0];
+        BigInteger z = new BigInteger(sigData[0][1]);
+
+        if (!FileIO.readArraysFromFile(pubKey, pubKeyFile)) {
+            System.out.println("Public Key file could not be read.");
+            return;
+        }
+        byte[] vxByte = pubKey[0][0];
+        byte[] vyByte = pubKey[0][1];
+        Ed448GoldilocksPoint V = new Ed448GoldilocksPoint(vxByte,vyByte);
+
+        if (!FileIO.readFromFile(sourceData, sourceFile)) {
+            System.out.println("Public Key file could not be read.");
+            return;
+        }
+        byte[] m = sourceData[0];
+
+        Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(z).add(V.publicMultiply(new BigInteger(h)));
+        byte[] res = KMACXOF256.runKMACXOF256(U.x.toByteArray(), m, 512, "T");
+
+        System.out.println("Vx: " + V.x);
+        System.out.println("Vy: " + V.y);
+        System.out.println("h: " + Arrays.toString(h));
+        System.out.println("z: " + z);
+        System.out.println("Ux: " + U.x);
+        System.out.println("Uy: " + U.y);
+
+        if (Arrays.equals(res,h)) {
+            System.out.println("Signature verified.");
+        } else {
+            System.out.println("WARNING: Signature invalid.");
+        }
     }
 
-    //TODO end of new content
+    //TODO new content ends here
 
     /* Helper functions. */
 
