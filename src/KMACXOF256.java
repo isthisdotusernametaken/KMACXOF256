@@ -52,7 +52,14 @@ public class KMACXOF256 {
         return res;
     }
 
-    static byte[] bytepad(final byte[] X, final int w) { //TODO source burrito
+    /**
+     * Generates a byte array with contents of X using length w, padded.
+     * Adopted from provided project documentation.
+     * @param X source data.
+     * @param w length specification.
+     * @return new byte array.
+     */
+    static byte[] bytepad(final byte[] X, final int w) {
         final byte[] leftEncodedW = leftEncode(Util.bigIntegerToBytes(BigInteger.valueOf(w)));
         final byte[] z = new byte[((leftEncodedW.length + X.length + (w - 1)) / w) * w];
 
@@ -64,6 +71,11 @@ public class KMACXOF256 {
         return z;
     }
 
+    /**
+     * Encodes provided string as byte array to be used in KMACX.
+     * @param S byte array of string desired.
+     * @return encoded byte array.
+     */
     static byte[] encodeString(final byte[] S) {
         return Util.cat(
                 leftEncode(
@@ -73,14 +85,30 @@ public class KMACXOF256 {
         );
     }
 
+    /**
+     * Calls encodeLeftOrRight with goal of encoding source byte array.
+     * @param bytes byte array to encode.
+     * @return result of encodeLeftOrRight
+     */
     static byte[] rightEncode(final byte[] bytes) {
         return encodeLeftOrRight(bytes, false);
     }
 
+    /**
+     * Calls encodeLeftOrRight with goal of encoding source byte array.
+     * @param bytes byte array to encode.
+     * @return result of encodeLeftOrRight
+     */
     static byte[] leftEncode(final byte[] bytes) {
         return encodeLeftOrRight(bytes, true);
     }
 
+    /**
+     * Prepends or Appends 0 values to provided byte array.
+     * @param bytesOfX source byte array.
+     * @param prependLength if encode is left or right aligned.
+     * @return result of encoding.
+     */
     private static byte[] encodeLeftOrRight(final byte[] bytesOfX, final boolean prependLength) {
         final byte[] bytesOfO = new byte[bytesOfX.length + 1];
 
