@@ -80,7 +80,7 @@ public class Ed448GoldilocksPoint {
             return O;
 
         Ed448GoldilocksPoint V = this;
-        for (int i = 0; i < scalar.bitLength(); i++) {
+        for (int i = scalar.bitLength() - 2; i >= 0; i--) {
             V = V.add(V);
             if (scalar.testBit(i))
                 V = V.add(this);
