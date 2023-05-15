@@ -43,10 +43,14 @@ public class ModularArithmetic {
     }
 
     static BigInteger getRandK() {
-        BigInteger res = new BigInteger(448,Util.RANDOM);
-        while (res.compareTo(p) >= 0 || res.signum() == -1) {
+        BigInteger res;
+        do {
             res = new BigInteger(448,Util.RANDOM);
-        }
+
+            if (res.signum() == -1)
+                res = res.negate();
+        } while (res.compareTo(r) >= 0);
+
         return res;
     }
 }
