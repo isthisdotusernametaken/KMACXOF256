@@ -62,19 +62,22 @@ public class Services {
     private static byte[][] cAndTOrMAndTPrimeAsymm(final BigInteger Wx, final byte[] mOrC, final boolean encrypting) {
         return cAndTOrMAndTPrime(
                 Util.bigIntegerToBytes(Wx), mOrC, encrypting,
-                "PK", "PKE", "PKA"
+                "PK", "PKE", "PKA",
+                false
         );
     }
 
     private static byte[][] cAndTOrMAndTPrimeSymm(final byte[] z, final byte[] passphrase, final byte[] mOrC, final boolean encrypting) {
         return cAndTOrMAndTPrime(
                 Util.cat(z, passphrase), mOrC, encrypting,
-                "S", "SKE", "SKA"
+                "S", "SKE", "SKA",
+                true
         );
     }
 
     private static byte[][] cAndTOrMAndTPrime(final byte[] KMACKey, final byte[] mOrC, final boolean encrypting,
-                                              final String keAndKaCust, final String mOrCCust, final String tOrTPrimeCust) {
+                                              final String keAndKaCust, final String mOrCCust, final String tOrTPrimeCust,
+                                              final boolean keLeft) {
         final byte[][] keAndKa = new byte[2][];
         Util.split(
                 keAndKa,
@@ -82,10 +85,10 @@ public class Services {
         );
 
         final byte[] cOrM = Util.xorByteArrays(
-                KMACXOF256.runKMACXOF256(keAndKa[0], new byte[0], mOrC.length * 8, mOrCCust),
+                KMACXOF256.runKMACXOF256(keAndKa[keLeft ? 0 : 1], new byte[0], mOrC.length * 8, mOrCCust),
                 mOrC
         );
-        final byte[] tOrTPrime = KMACXOF256.runKMACXOF256(keAndKa[1], encrypting ? mOrC : cOrM, 512, tOrTPrimeCust);
+        final byte[] tOrTPrime = KMACXOF256.runKMACXOF256(keAndKa[keLeft ? 1 : 0], encrypting ? mOrC : cOrM, 512, tOrTPrimeCust);
 
         return new byte[][]{cOrM, tOrTPrime};
     }
