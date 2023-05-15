@@ -30,14 +30,14 @@ public class Ed448GoldilocksPoint {
     }
 
     private static BigInteger calculateY(final BigInteger x, final boolean lsb) {
-        final BigInteger xSquared = ModularArithmetic.mult(x, x);
+        final BigInteger xSquared = ModP.mult(x, x);
 
-        return ModularArithmetic.sqrt(
-                ModularArithmetic.div(
-                        ModularArithmetic.sub(BigInteger.ONE, xSquared),
-                        ModularArithmetic.add(
+        return ModP.sqrt(
+                ModP.div(
+                        ModP.sub(BigInteger.ONE, xSquared),
+                        ModP.add(
                                 BigInteger.ONE,
-                                ModularArithmetic.mult(negativeD, xSquared)
+                                ModP.mult(negativeD, xSquared)
                         )
                 ),
                 lsb
@@ -49,28 +49,28 @@ public class Ed448GoldilocksPoint {
     }
 
     Ed448GoldilocksPoint add(final Ed448GoldilocksPoint addend) {
-        final BigInteger dX1X2Y1Y2 = ModularArithmetic.mult(
+        final BigInteger dX1X2Y1Y2 = ModP.mult(
                 d, x, addend.x, y, addend.y
         );
 
         return new Ed448GoldilocksPoint(
-                ModularArithmetic.div( // New x
+                ModP.div( // New x
                         // x1 y2 + y1 x2
-                        ModularArithmetic.add(
-                                ModularArithmetic.mult(x, addend.y),
-                                ModularArithmetic.mult(y, addend.x)
+                        ModP.add(
+                                ModP.mult(x, addend.y),
+                                ModP.mult(y, addend.x)
                         ),
                         // 1 + d x1 x2 y1 y2
-                        ModularArithmetic.add(BigInteger.ONE, dX1X2Y1Y2)
+                        ModP.add(BigInteger.ONE, dX1X2Y1Y2)
                 ),
-                ModularArithmetic.div( // New y
+                ModP.div( // New y
                         // y1 y2 - x1 x2
-                        ModularArithmetic.sub(
-                                ModularArithmetic.mult(y, addend.y),
-                                ModularArithmetic.mult(x, addend.x)
+                        ModP.sub(
+                                ModP.mult(y, addend.y),
+                                ModP.mult(x, addend.x)
                         ),
                         // 1 - d x1 x2 y1 y2
-                        ModularArithmetic.sub(BigInteger.ONE, dX1X2Y1Y2)
+                        ModP.sub(BigInteger.ONE, dX1X2Y1Y2)
                 )
         );
     }

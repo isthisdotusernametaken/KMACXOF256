@@ -476,7 +476,8 @@ public class UserInterface {
         byte[] h = KMACXOF256.runKMACXOF256(U.x.toByteArray(), sourceFileContent[0], 512, "T");
 
 //        BigInteger z = kNum.subtract(new BigInteger(h).multiply(sNum)).mod(ModularArithmetic.r);
-        BigInteger z = kNum.subtract(ModularArithmetic.mult(new BigInteger(h),sNum)).mod(ModularArithmetic.r);
+//        BigInteger z = kNum.subtract(ModP.mult(new BigInteger(h),sNum)).mod(ModP.r);
+        BigInteger z = ModR.sub(kNum, ModR.mult(new BigInteger(h), sNum));
 
         System.out.println("h: " + Arrays.toString(h));
         System.out.println("z: " + z);

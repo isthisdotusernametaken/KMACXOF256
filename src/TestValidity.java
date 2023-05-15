@@ -34,11 +34,10 @@ public class TestValidity {
     static boolean testrandK() {
         for (int i = 0; i < 11; i++) {
             //k * G = (k mod r) * G
-            BigInteger k = ModularArithmetic.getRandK();
+            BigInteger k = ModR.getRandK();
 
             Ed448GoldilocksPoint kG = Ed448GoldilocksPoint.G.publicMultiply(k);
-            BigInteger kmr = k.mod(ModularArithmetic.r);
-            Ed448GoldilocksPoint kmrG = Ed448GoldilocksPoint.G.publicMultiply(kmr);
+            Ed448GoldilocksPoint kmrG = Ed448GoldilocksPoint.G.publicMultiply(k);
 
             if (!kG.equals(kmrG)) {
                 System.out.println("kG != kmrG");
@@ -65,7 +64,7 @@ public class TestValidity {
             //k * (t * G) = t * (k * G) = (k * t mod r) * G
             Ed448GoldilocksPoint ktG = Ed448GoldilocksPoint.G.publicMultiply(t).publicMultiply(k);
             Ed448GoldilocksPoint tkG = Ed448GoldilocksPoint.G.publicMultiply(k).publicMultiply(t);
-            BigInteger ktmr = k.multiply(t).mod(ModularArithmetic.r);
+            BigInteger ktmr = ModR.mult(k, t);
             Ed448GoldilocksPoint ktmrG = Ed448GoldilocksPoint.G.publicMultiply(ktmr);
             if (!ktG.equals(tkG)) {
                 System.out.println("k * (t * G) != t * (k * G)");
@@ -137,7 +136,7 @@ public class TestValidity {
         }
 
         //rG = O
-        localG = Ed448GoldilocksPoint.G.publicMultiply(ModularArithmetic.r);
+        localG = Ed448GoldilocksPoint.G.publicMultiply(ModR.r);
         if (!localG.equals(Ed448GoldilocksPoint.O)) {
             System.out.println("rG != O");
             return false;
