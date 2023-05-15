@@ -3,8 +3,8 @@ import java.math.BigInteger;
 public class ModP {
 
     static final BigInteger p = BigInteger.TWO.pow(448)
-                                        .subtract(BigInteger.TWO.pow(224))
-                                        .subtract(BigInteger.ONE);
+                                .subtract(BigInteger.TWO.pow(224))
+                                .subtract(BigInteger.ONE);
 
     static BigInteger add(final BigInteger augend, final BigInteger addend) {
         return ModularArithmetic.add(p, augend, addend);
