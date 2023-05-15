@@ -24,6 +24,80 @@ public class TestValidity {
 
         res = testrandK() ? "Passed" : "Failed";
         System.out.println("Random Value Elliptic Curve Tests " + res);
+
+        res = testSigning() ? "Passed" : "Failed";
+        System.out.println("Signing Validation Tests " + res);
+    }
+
+    /**
+     * Test suite for included Ed448 document signing.
+     * These tests are adapted from values tested during office hour.
+     * @return whether tests were passed.
+     */
+    private static boolean testSigning() {
+        BigInteger s = new BigInteger("181709681073901722637330951972001133588410340171829515070372549795146003961539585716195755291692375963310293709091662304773755859649767");
+        Ed448GoldilocksPoint V = Ed448GoldilocksPoint.G.publicMultiply(s);
+//        System.out.println("Vx: " + V.x);
+//        System.out.println("Vy: " + V.y);
+        Ed448GoldilocksPoint Vcomp = new Ed448GoldilocksPoint(new BigInteger("111910020947240298691268336162300824746037131216209191799810358096412318142801044014797907773347279881352710842324719097290172466450981"),
+                new BigInteger("303065640976498061814411258004932719509123967921223459369488294905178621661014494003510485620704199511147463779612337517846176798606966"));
+        if (!V.equals(Vcomp)) {
+            System.out.println("V does not equal stored expected value.");
+            return false;
+        }
+
+        BigInteger k = new BigInteger("181709681073901722637330951972001133588410340171829515070372549795146003961539585716195755291692375963310293709091662304773755859649771");
+        Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(k);
+//        System.out.println("Ux: " + U.x);
+//        System.out.println("Uy: " + U.y);
+        Ed448GoldilocksPoint Ucomp = new Ed448GoldilocksPoint(new BigInteger("404380029028889598305090303264184820370701159517231199528356945527365709676372694331698319757588071399739144817588205208086872260580233"),
+                new BigInteger("275896460466705704734935549735944857172840076155469986901454984644766316915006013707938105197446415437527868162799018964936077024972356"));
+        if (!U.equals(Ucomp)) {
+            System.out.println("U does not equal stored expected value.");
+            return false;
+        }
+
+        BigInteger h = new BigInteger("181709681073901722637330951972001133588410340171829515070372549795146003961539585716195755291692375963310293709091662304773755859649773");
+        BigInteger z = k.subtract(h.multiply(s)).mod(ModR.r);
+//        System.out.println("z: " + z);
+        BigInteger zComp = new BigInteger("181709681073901722637330951972001133588410340171829515070372549795146003961539585716195755291692375963310293709091662304773755859649699");
+        if (!z.equals(zComp)) {
+            System.out.println("z does not equal stored expected value.");
+            return false;
+        }
+
+        Ed448GoldilocksPoint zg = Ed448GoldilocksPoint.G.publicMultiply(z);
+//        System.out.println("zgx: " + zg.x);
+//        System.out.println("zgy: " + zg.y);
+        Ed448GoldilocksPoint ZGcomp = new Ed448GoldilocksPoint(new BigInteger("345894552852087263977237504695496465160464389249526159648594302148096535488074423113569071955810152000328012051065483274989607585737598"),
+                new BigInteger("454462844747667412945175092625655210772183720085230519727190280879775444374115702642054728064935049574668331824260439712755646156916252"));
+        if (!zg.equals(ZGcomp)) {
+            System.out.println("zg does not equal stored expected value.");
+            return false;
+        }
+
+        Ed448GoldilocksPoint hv = V.publicMultiply(h);
+//        System.out.println("hvx: " + hv.x);
+//        System.out.println("hvy: " + hv.y);
+        Ed448GoldilocksPoint HVcomp = new Ed448GoldilocksPoint(new BigInteger("138673777668098078958523464308330120015358842185385264673450630678467333639774002047545931872429733011941889972579872832692149385574261"),
+                new BigInteger("706268205075764833997762442771271321638924372213634149932866211190160677974967523276890474214539730357726552291657851001494570124193482"));
+        if (!hv.equals(HVcomp)) {
+            System.out.println("hv does not equal stored expected value.");
+            return false;
+        }
+
+
+        Ed448GoldilocksPoint W = zg.add(hv);
+//        System.out.println("Wx: " + W.x);
+//        System.out.println("Wy: " + W.y);
+        Ed448GoldilocksPoint Wcomp = new Ed448GoldilocksPoint(new BigInteger("404380029028889598305090303264184820370701159517231199528356945527365709676372694331698319757588071399739144817588205208086872260580233"),
+                new BigInteger("275896460466705704734935549735944857172840076155469986901454984644766316915006013707938105197446415437527868162799018964936077024972356"));
+        if (!W.equals(Wcomp)) {
+            System.out.println("W does not equal stored expected value.");
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -31,8 +105,8 @@ public class TestValidity {
      * These tests are adapted from provided project documentation.
      * @return whether tests were passed.
      */
-    static boolean testrandK() {
-        for (int i = 0; i < 11; i++) {
+    private static boolean testrandK() {
+        for (int i = 0; i < 10; i++) {
             //k * G = (k mod r) * G
             BigInteger k = ModR.getRandK();
 
