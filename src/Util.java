@@ -94,33 +94,6 @@ public class Util {
         return res;
     }
 
-    static byte[] xorByteArraysZext(final byte[] first, final byte[] second) {
-        final byte[] shorter, longer;
-        if (first.length > second.length) {
-            longer = first;
-            shorter = second;
-        } else {
-            longer = second;
-            shorter = first;
-        }
-
-        byte[] res = new byte[longer.length];
-
-        // XOR the last shorter.length bytes of each array
-        for (int i = shorter.length - 1, j = longer.length - 1; i >= 0; i--, j--)
-            res[j] = (byte) (shorter[i] ^ longer[j]);
-        // XOR the preceding longer.length - shorter.length bytes of longer
-        // with 0 (A XOR 0 = A, so copying these bytes to res is sufficient)
-        System.arraycopy(longer, 0, res, 0, longer.length - shorter.length);
-
-        return res;
-    }
-
-    static void andByteInPlace(final byte[] bytes, final byte toAnd) {
-        for (int i = 0; i < bytes.length; i++)
-            bytes[i] &= toAnd;
-    }
-
     static byte[] toBytes(final int intVal) {
         return new byte[]{
                 (byte) (intVal >>> 24),
