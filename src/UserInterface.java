@@ -466,7 +466,28 @@ public class UserInterface {
      * Sign user input using Schnorr/DHIES with passphrase and write to new file.
      */
     private static void sdSignInput() {
+        System.out.println(PASSPHRASE_INPUT_PROMPT);
+        String rawPwInput = TEIN.nextLine();
+        System.out.println("What should the output signature file be named:");
+        String outputName = TEIN.nextLine();
+        System.out.println("Text to sign:");
+        byte[] sourceData = Util.ASCIIStringToBytes(TEIN.nextLine());
+        System.out.println("File to write text to, a .txt extension will be automatically added:");
+        String sourceFile = TEIN.nextLine();
 
+        if (!FileIO.writeToFile(sourceData, sourceFile + ".txt", false)) {
+            System.out.println("Source data could not be written to file.");
+            return;
+        }
+
+        SchnorrSignature ss = Services.signFile(sourceData, Util.ASCIIStringToBytes(rawPwInput));
+
+        if (FileIO.writeArraysToFile(outputName, ss.h(), ss.z())) {
+            System.out.println("Success! Signature written to: " + outputName + ".bin");
+        } else {
+            System.out.println("File writing did not work right!");
+            return;
+        }
 
         iCurrentMenu = MAIN_MENU;
     }
