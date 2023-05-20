@@ -401,7 +401,7 @@ public class UserInterface {
     private static void sdEncryptFromFile() {
         System.out.println("What should the output file be named:");
         String outputName = TEIN.nextLine();
-        System.out.println("Source File:");
+        System.out.println("Source File including extension:");
         String sourceFile = TEIN.nextLine();
         System.out.println("Source Public Key:");
         String sourceKey = TEIN.nextLine();
@@ -520,7 +520,7 @@ public class UserInterface {
         String rawPwInput = TEIN.nextLine();
         System.out.println("What should the output signature file be named:");
         String outputName = TEIN.nextLine();
-        System.out.println("Source File to sign:");
+        System.out.println("Source File to sign including extension:");
         String sourceFile = TEIN.nextLine();
 
         byte[][] sourceFileContent = new byte[1][];
@@ -575,7 +575,7 @@ public class UserInterface {
      * Verify data file and signature file using given public key file.
      */
     private static void sdVerifySignature() {
-        System.out.println("Source File to check signature for:");
+        System.out.println("Source File to check signature for including extension:");
         String sourceFile = TEIN.nextLine();
         System.out.println("Signature file:");
         String sigFile = TEIN.nextLine();
