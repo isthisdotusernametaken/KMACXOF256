@@ -10,6 +10,8 @@ import java.util.Arrays;
  */
 public class Services {
 
+    private static final BigInteger FOUR = BigInteger.valueOf(4);
+
     static byte[] cryptographicHash(final byte[] data) {
         return KMACXOF256.runKMACXOF256(new byte[0], data, 512, "D");
     }
@@ -41,7 +43,7 @@ public class Services {
     }
 
     static DHIESCryptogram encryptAsymm(final byte[] m, final Ed448GoldilocksPoint V) {
-        final var k = new BigInteger(448, Util.RANDOM).shiftLeft(2);
+        final var k = ModR.mult(new BigInteger(448, Util.RANDOM), FOUR);
         final var W = V.publicMultiply(k);
         final var Z = Ed448GoldilocksPoint.G.publicMultiply(k);
 
@@ -94,9 +96,12 @@ public class Services {
     }
 
     private static BigInteger calculateSFromPw(final byte[] pw) {
-        return new BigInteger(
+        return ModR.mult(
+                new BigInteger(
                 KMACXOF256.runKMACXOF256(pw, new byte[0], 512, "SK")
-        ).shiftLeft(2);
+                ),
+                FOUR
+        );
     }
 
     private static boolean checkDecryption(final byte[][] mOut, final byte[] t, final byte[][] mAndTPrime) {
