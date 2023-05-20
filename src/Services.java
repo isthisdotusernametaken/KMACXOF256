@@ -61,30 +61,20 @@ public class Services {
         return checkDecryption(mOut, cryptogram.t(), mAndTPrime);
     }
 
-    static SchnorrSignature signFile(byte[] m, byte[] pw) {
+    static SchnorrSignature signFile(final byte[] m, final byte[] pw) {
         BigInteger s = calculateSFromPw(pw);
         BigInteger k = ModR.mult(new BigInteger(KMACXOF256.runKMACXOF256(s.toByteArray(), m, 512, "N")), FOUR);
         Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(k);
         BigInteger h = new BigInteger(KMACXOF256.runKMACXOF256(U.x.toByteArray(), m, 512, "T")).mod(ModR.r);
         BigInteger z = ModR.sub(k, ModR.mult(h, s));
-
-        System.out.println("Ux: " + U.x);
-        System.out.println("h: " + Arrays.toString(h.toByteArray()));
-        System.out.println("m: " + Arrays.toString(m));
-
         return new SchnorrSignature(h.toByteArray(), z.toByteArray());
     }
 
-    static boolean verifySignature(SchnorrSignature hz, Ed448GoldilocksPoint V, byte[] m) {
+    static boolean verifySignature(final SchnorrSignature hz, final Ed448GoldilocksPoint V, final byte[] m) {
         Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(new BigInteger(hz.z()))
                 .add(V.publicMultiply(new BigInteger(hz.h()))); //the modR is here in spirit
-        byte[] res = KMACXOF256.runKMACXOF256(U.x.toByteArray(), m, 512, "T");
-
-        System.out.println("Ux: " + U.x);
-        System.out.println("h: " + Arrays.toString(res));
-        System.out.println("m: " + Arrays.toString(m));
-
-        return Arrays.equals(res,hz.h());
+        byte[] res = new BigInteger(KMACXOF256.runKMACXOF256(U.x.toByteArray(), m, 512, "T")).mod(ModR.r).toByteArray();
+        return Arrays.equals(res, hz.h());
     }
 
     private static byte[][] cAndTOrMAndTPrimeAsymm(final BigInteger Wx, final byte[] mOrC, final boolean encrypting) {

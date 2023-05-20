@@ -1,5 +1,3 @@
-import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -364,7 +362,7 @@ public class UserInterface {
         EllipticKeyPair ekp = Services.generateKeyPair(Util.ASCIIStringToBytes(rawPwInput));
 
         //Save public key
-        if (FileIO.writeArraysToFile(outputName,ekp.V().toBytes())) {
+        if (FileIO.writeArraysToFile(outputName, ekp.V().toBytes())) {
             System.out.println("Success, public key written to: " + outputName + ".bin");
         } else {
             System.out.println("File writing did not work right!");
@@ -447,43 +445,14 @@ public class UserInterface {
         String sourceFile = TEIN.nextLine();
 
         byte[][] sourceFileContent = new byte[1][];
-        if (!FileIO.readFromFile(sourceFileContent,sourceFile)) {
+        if (!FileIO.readFromFile(sourceFileContent, sourceFile)) {
             System.out.println("File could not be read.");
             return;
         }
 
         SchnorrSignature ss = Services.signFile(sourceFileContent[0], Util.ASCIIStringToBytes(rawPwInput));
 
-        //services
-        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
-        byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
-
-        BigInteger sNum = new BigInteger(s).shiftLeft(2).mod(ModR.r);
-
-        byte[] k =  KMACXOF256.runKMACXOF256(s, sourceFileContent[0], 512, "N");
-
-        BigInteger kNum = new BigInteger(k).shiftLeft(2).mod(ModR.r);
-
-        Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(kNum);
-
-        byte[] h = KMACXOF256.runKMACXOF256(U.x.toByteArray(), sourceFileContent[0], 512, "T");
-
-        BigInteger z = ModR.sub(kNum, ModR.mult(new BigInteger(h).mod(ModR.r), sNum));
-        //end of services, start saving public key
-
-        System.out.println("ss");
-        System.out.println(Arrays.toString(ss.h()));
-        System.out.println(Arrays.toString(ss.z()));
-
-        System.out.println("orig");
-        System.out.println(Arrays.toString(h));
-        System.out.println(Arrays.toString(z.toByteArray()));
-
-        System.out.println(Arrays.equals(ss.h(),h));
-        System.out.println(Arrays.equals(ss.z(),z.toByteArray()));
-
         if (FileIO.writeArraysToFile(outputName, ss.h(), ss.z())) {
-//        if (FileIO.writeArraysToFile(outputName, h,z.toByteArray())) {
             System.out.println("Success! Signature written to: " + outputName + ".bin");
         } else {
             System.out.println("File writing did not work right!");
@@ -517,36 +486,24 @@ public class UserInterface {
         byte[][][] pubKey = new byte[1][][];
         byte[][] sourceData = new byte[1][];
 
-        if (!FileIO.readArraysFromFile(sigData,sigFile)) {
+        if (!FileIO.readArraysFromFile(sigData, sigFile)) {
             System.out.println("Signature file could not be read.");
             return;
         }
-//        byte[] h = sigData[0][0];
-//        BigInteger z = new BigInteger(sigData[0][1]);
         SchnorrSignature hz = new SchnorrSignature(sigData[0][0], sigData[0][1]);
 
         if (!FileIO.readArraysFromFile(pubKey, pubKeyFile)) {
             System.out.println("Public Key file could not be read.");
             return;
         }
-        byte[] vxByte = pubKey[0][0];
-        byte[] vyByte = pubKey[0][1];
-        Ed448GoldilocksPoint V = new Ed448GoldilocksPoint(vxByte,vyByte);
+        Ed448GoldilocksPoint V = new Ed448GoldilocksPoint(pubKey[0][0], pubKey[0][1]);
 
         if (!FileIO.readFromFile(sourceData, sourceFile)) {
             System.out.println("Public Key file could not be read.");
             return;
         }
-        byte[] m = sourceData[0];
 
-
-        //services
-        boolean result = Services.verifySignature(hz, V, m);
-
-//        Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(z).add(V.publicMultiply(new BigInteger(h).mod(ModR.r)));
-//        byte[] res = KMACXOF256.runKMACXOF256(U.x.toByteArray(), m, 512, "T");
-
-        //services
+        boolean result = Services.verifySignature(hz, V, sourceData[0]);
 
         if (result) {
             System.out.println("Signature verified.");
