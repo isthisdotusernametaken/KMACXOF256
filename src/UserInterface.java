@@ -503,9 +503,7 @@ public class UserInterface {
             return;
         }
 
-        boolean result = Services.verifySignature(hz, V, sourceData[0]);
-
-        if (result) {
+        if (Services.verifySignature(hz, V, sourceData[0])) {
             System.out.println("Signature verified.");
         } else {
             System.out.println("WARNING: Signature invalid.");
