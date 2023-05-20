@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 /**
  * @author Joshua Barbee
+ * @author James Deal
  */
 public class Services {
 
