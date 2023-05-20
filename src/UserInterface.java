@@ -285,13 +285,11 @@ public class UserInterface {
         if (FileIO.readFromFile(fileContent, rawInput)) {
             output = Services.encryptSymm(fileContent[0], bytePw);
 
-            boolean writeSuccess = FileIO.writeToFile(output.z(), outputName + "_z", true);
-            writeSuccess &= FileIO.writeToFile(output.c(), outputName + "_c", true);
-            writeSuccess &= FileIO.writeToFile(output.t(), outputName + "_t", true);
-
-            if (writeSuccess) {
-                System.out.println("Files written successfully.");
-            }
+            if (FileIO.writeArraysToFile(
+                    outputName,
+                    output.z(), output.c(), output.t()
+            ))
+                System.out.println("File written successfully.");
         }
 
         //back to the top.
@@ -311,25 +309,19 @@ public class UserInterface {
         String rawOutInput = TEIN.nextLine();
 
         //do stuff
-        byte[][] fileContent = new byte[1][];
+        byte[][][] fileContents = new byte[1][][];
         byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
 
-        boolean readStatus = FileIO.readFromFile(fileContent, rawInput + "_z.bin");
-        byte[] z = fileContent[0];
+        if (FileIO.readArraysFromFile(fileContents, rawInput)) {
+            SymmetricCryptogram inData = new SymmetricCryptogram(
+                    fileContents[0][0], fileContents[0][1], fileContents[0][2]
+            );
 
-        readStatus &= FileIO.readFromFile(fileContent, rawInput + "_c.bin");
-        byte[] c = fileContent[0];
-
-        readStatus &= FileIO.readFromFile(fileContent, rawInput + "_t.bin");
-        byte[] t = fileContent[0];
-
-        if (readStatus) {
-            SymmetricCryptogram inData = new SymmetricCryptogram(z, c, t);
-
-            if (Services.decryptSymm(fileContent, inData, bytePw)) {
+            byte[][] m = new byte[1][];
+            if (Services.decryptSymm(m, inData, bytePw)) {
                 System.out.println("Decrypt successful.");
 
-                if (FileIO.writeToFile(fileContent[0], rawOutInput, false)) {
+                if (FileIO.writeToFile(m[0], rawOutInput, false)) {
                     System.out.println("Files written successfully.");
                 }
             } else {
@@ -372,13 +364,11 @@ public class UserInterface {
         //encrypt private key and save
         SymmetricCryptogram encPrivateKey = Services.encryptSymm(ekp.s(), Util.ASCIIStringToBytes(rawPwInput));
 
-        boolean writeSuccess = FileIO.writeToFile(encPrivateKey.z(), outputName + "_z", true);
-        writeSuccess &= FileIO.writeToFile(encPrivateKey.c(), outputName + "_c", true);
-        writeSuccess &= FileIO.writeToFile(encPrivateKey.t(), outputName + "_t", true);
-
-        if (writeSuccess) {
+        if (FileIO.writeArraysToFile(
+                outputName + "_private",
+                encPrivateKey.z(), encPrivateKey.c(), encPrivateKey.t()
+        ))
             System.out.println("Private key encrypted and saved using given passphrase.");
-        }
     }
 
     /**

@@ -10,6 +10,9 @@ import java.nio.file.Path;
  */
 public class FileIO {
 
+    private static final long MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB, avoid OutOfMemoryError
+    private static final long MAX_FILE_SIZE_MINUS_ARR_CNT = MAX_FILE_SIZE - 4;
+
     static boolean readFromFile(final byte[][] fileContents, final String filename) {
         try {
             fileContents[0] = Files.readAllBytes(Path.of(filename));
@@ -35,6 +38,13 @@ public class FileIO {
     }
 
     static boolean writeArraysToFile(final String filename, final byte[]... arrays) {
+        long allowedBytesRemaining = MAX_FILE_SIZE_MINUS_ARR_CNT - (arrays.length * 4L);
+        for (var array : arrays) {
+            allowedBytesRemaining -= array.length;
+            if (allowedBytesRemaining < 0)
+                throw new IllegalArgumentException(); // File would be larger than limit
+        }
+
         try (var output = new FileOutputStream(filename + ".bin")) {
             // File format:
             // Number of arrays (4 bytes),
@@ -44,12 +54,16 @@ public class FileIO {
             //      (xn bytes)
 
             output.write(Util.toBytes(arrays.length));
-            for (var array : arrays)
+            for (var array : arrays) {
                 output.write(Util.toBytes(array.length));
+            }
             for (var array : arrays)
                 output.write(array);
 
             return true;
+        } catch (IllegalArgumentException e) {
+            System.out.println("File could not be written (file too large).");
+            return false;
         } catch (IOException | SecurityException e) {
             System.out.println("File could not be written.");
             return false;
@@ -59,10 +73,26 @@ public class FileIO {
     static boolean readArraysFromFile(final byte[][][] fileContents, final String filename) {
         try (var input = new FileInputStream(filename + ".bin")) {
             // File format: See writeArraysToFile
+            long allowedBytesRemaining = MAX_FILE_SIZE_MINUS_ARR_CNT;
+            int length;
 
-            var arrays = new byte[Util.toInt(input.readNBytes(4))][];
-            for (int i = 0; i < arrays.length; i++)
-                arrays[i] = new byte[Util.toInt(input.readNBytes(4))];
+            length = Util.toInt(input.readNBytes(4)); // Array count
+            allowedBytesRemaining -= (length * 4L);
+            if (allowedBytesRemaining < 0)
+                throw new IllegalArgumentException();
+
+            var arrays = new byte[length][];
+            for (int i = 0; i < arrays.length; i++) {
+                length = Util.toInt(input.readNBytes(4)); // Bytes in array
+
+                allowedBytesRemaining -= length;
+                if (allowedBytesRemaining < 0)
+                    throw new IllegalArgumentException(); // File too large
+                                                          // (may be encountered
+                                                          // if size data corrupted)
+
+                arrays[i] = new byte[length];
+            }
             for (var array : arrays)
                 if (input.read(array) != array.length)
                     throw new EOFException();
