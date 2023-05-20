@@ -360,30 +360,23 @@ public class UserInterface {
         System.out.println("What should the output file be named:");
         String outputName = TEIN.nextLine();
 
-        //services
-        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
-        byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
-        BigInteger sNum = new BigInteger(s).shiftLeft(2);
-//        BigInteger sNum = ModularArithmetic.mult(new BigInteger(s), new BigInteger("4"));
-        Ed448GoldilocksPoint V = Ed448GoldilocksPoint.G.publicMultiply(sNum);
+        //Make Elliptical key pair
+        EllipticKeyPair ekp = Services.generateKeyPair(Util.ASCIIStringToBytes(rawPwInput));
 
-        //end of services, start saving public key
-        if (FileIO.writeArraysToFile(outputName,V.toBytes())) {
+        //Save public key
+        if (FileIO.writeArraysToFile(outputName,ekp.V().toBytes())) {
             System.out.println("Success, public key written to: " + outputName + ".bin");
         } else {
             System.out.println("File writing did not work right!");
             return;
         }
 
-        System.out.println("Vx: " + V.x);
-        System.out.println("Vy: " + V.y);
+        //encrypt private key and save
+        SymmetricCryptogram encPrivateKey = Services.encryptSymm(ekp.s(), Util.ASCIIStringToBytes(rawPwInput));
 
-        //encrypt private and save
-        SymmetricCryptogram encPrivKey = Services.encryptSymm(sNum.toByteArray(), bytePw);
-
-        boolean writeSuccess = FileIO.writeToFile(encPrivKey.z(), outputName + "_z", true);
-        writeSuccess &= FileIO.writeToFile(encPrivKey.c(), outputName + "_c", true);
-        writeSuccess &= FileIO.writeToFile(encPrivKey.t(), outputName + "_t", true);
+        boolean writeSuccess = FileIO.writeToFile(encPrivateKey.z(), outputName + "_z", true);
+        writeSuccess &= FileIO.writeToFile(encPrivateKey.c(), outputName + "_c", true);
+        writeSuccess &= FileIO.writeToFile(encPrivateKey.t(), outputName + "_t", true);
 
         if (writeSuccess) {
             System.out.println("Private key encrypted and saved using given passphrase.");
@@ -453,39 +446,44 @@ public class UserInterface {
         System.out.println("Source File to sign:");
         String sourceFile = TEIN.nextLine();
 
-        //services
-        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
-        byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
-        BigInteger sNum = new BigInteger(s).shiftLeft(2);
-//        BigInteger sNum = ModularArithmetic.mult(new BigInteger(s), new BigInteger("4"));
-
         byte[][] sourceFileContent = new byte[1][];
         if (!FileIO.readFromFile(sourceFileContent,sourceFile)) {
             System.out.println("File could not be read.");
             return;
         }
 
+        SchnorrSignature ss = Services.signFile(sourceFileContent[0], Util.ASCIIStringToBytes(rawPwInput));
+
+        //services
+        byte[] bytePw = Util.ASCIIStringToBytes(rawPwInput);
+        byte[] s = KMACXOF256.runKMACXOF256(bytePw, Util.ASCIIStringToBytes(""), 512, "SK");
+
+        BigInteger sNum = new BigInteger(s).shiftLeft(2).mod(ModR.r);
+
         byte[] k =  KMACXOF256.runKMACXOF256(s, sourceFileContent[0], 512, "N");
-        BigInteger kNum = new BigInteger(k).shiftLeft(2);
-//        BigInteger kNum = ModularArithmetic.mult(new BigInteger(k), new BigInteger("4"));
+
+        BigInteger kNum = new BigInteger(k).shiftLeft(2).mod(ModR.r);
 
         Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(kNum);
-        //from verify signature:
-        //Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(z).add(V.publicMultiply(new BigInteger(h)));
 
         byte[] h = KMACXOF256.runKMACXOF256(U.x.toByteArray(), sourceFileContent[0], 512, "T");
 
-//        BigInteger z = kNum.subtract(new BigInteger(h).multiply(sNum)).mod(ModularArithmetic.r);
-//        BigInteger z = kNum.subtract(ModP.mult(new BigInteger(h),sNum)).mod(ModP.r);
-        BigInteger z = ModR.sub(kNum, ModR.mult(new BigInteger(h), sNum));
-
-        System.out.println("h: " + Arrays.toString(h));
-        System.out.println("z: " + z);
-        System.out.println("Ux: " + U.x);
-        System.out.println("Uy: " + U.y);
-
+        BigInteger z = ModR.sub(kNum, ModR.mult(new BigInteger(h).mod(ModR.r), sNum));
         //end of services, start saving public key
-        if (FileIO.writeArraysToFile(outputName, h, z.toByteArray())) {
+
+        System.out.println("ss");
+        System.out.println(Arrays.toString(ss.h()));
+        System.out.println(Arrays.toString(ss.z()));
+
+        System.out.println("orig");
+        System.out.println(Arrays.toString(h));
+        System.out.println(Arrays.toString(z.toByteArray()));
+
+        System.out.println(Arrays.equals(ss.h(),h));
+        System.out.println(Arrays.equals(ss.z(),z.toByteArray()));
+
+        if (FileIO.writeArraysToFile(outputName, ss.h(), ss.z())) {
+//        if (FileIO.writeArraysToFile(outputName, h,z.toByteArray())) {
             System.out.println("Success! Signature written to: " + outputName + ".bin");
         } else {
             System.out.println("File writing did not work right!");
@@ -523,8 +521,9 @@ public class UserInterface {
             System.out.println("Signature file could not be read.");
             return;
         }
-        byte[] h = sigData[0][0];
-        BigInteger z = new BigInteger(sigData[0][1]);
+//        byte[] h = sigData[0][0];
+//        BigInteger z = new BigInteger(sigData[0][1]);
+        SchnorrSignature hz = new SchnorrSignature(sigData[0][0], sigData[0][1]);
 
         if (!FileIO.readArraysFromFile(pubKey, pubKeyFile)) {
             System.out.println("Public Key file could not be read.");
@@ -540,17 +539,16 @@ public class UserInterface {
         }
         byte[] m = sourceData[0];
 
-        Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(z).add(V.publicMultiply(new BigInteger(h)));
-        byte[] res = KMACXOF256.runKMACXOF256(U.x.toByteArray(), m, 512, "T");
 
-        System.out.println("Vx: " + V.x);
-        System.out.println("Vy: " + V.y);
-        System.out.println("h: " + Arrays.toString(h));
-        System.out.println("z: " + z);
-        System.out.println("Ux: " + U.x);
-        System.out.println("Uy: " + U.y);
+        //services
+        boolean result = Services.verifySignature(hz, V, m);
 
-        if (Arrays.equals(res,h)) {
+//        Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(z).add(V.publicMultiply(new BigInteger(h).mod(ModR.r)));
+//        byte[] res = KMACXOF256.runKMACXOF256(U.x.toByteArray(), m, 512, "T");
+
+        //services
+
+        if (result) {
             System.out.println("Signature verified.");
         } else {
             System.out.println("WARNING: Signature invalid.");
