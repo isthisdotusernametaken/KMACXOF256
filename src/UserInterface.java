@@ -455,7 +455,7 @@ public class UserInterface {
      * Decrypt sd file from given passphrase and write to new file.
      */
     private static void sdDecryptHandler() {
-        System.out.println("What should the output file be named:");
+        System.out.println("What should the output file be named including file extension:");
         String outputName = TEIN.nextLine();
         System.out.println("Source File:");
         String sourceFile = TEIN.nextLine();
@@ -475,11 +475,11 @@ public class UserInterface {
         if (Services.decryptAsymm(mOut, dc, Util.ASCIIStringToBytes(sourceKey))) {
             System.out.println("Passphrase verified, content decrypted.");
 
-            if (!FileIO.writeToFile(mOut[0], outputName + ".txt", false)) {
+            if (!FileIO.writeToFile(mOut[0], outputName, false)) {
                 System.out.println("Output file could not be written.");
                 return;
             } else {
-                System.out.println("File written successfully: " + outputName + ".txt");
+                System.out.println("File written successfully: " + outputName);
             }
         } else {
             System.out.println("Passphrase incorrect.");
