@@ -399,6 +399,34 @@ public class UserInterface {
      * Encrypt file using Schnorr/DHIES.
      */
     private static void sdEncryptFromFile() {
+        System.out.println("What should the output file be named:");
+        String outputName = TEIN.nextLine();
+        System.out.println("Source File:");
+        String sourceFile = TEIN.nextLine();
+        System.out.println("Source Public Key:");
+        String sourceKey = TEIN.nextLine();
+
+        byte[][] sourceFileContent = new byte[1][];
+        if (!FileIO.readFromFile(sourceFileContent, sourceFile)) {
+            System.out.println("Content File could not be read.");
+            return;
+        }
+
+        byte[][][] sourceKeyContent = new byte[1][][];
+        if (!FileIO.readArraysFromFile(sourceKeyContent, sourceKey)) {
+            System.out.println("Key File could not be read.");
+            return;
+        }
+
+        DHIESCryptogram dc = Services.encryptAsymm(sourceFileContent[0],
+                new Ed448GoldilocksPoint(sourceKeyContent[0][0], sourceKeyContent[0][1]));
+
+        if (!FileIO.writeArraysToFile(outputName, dc.Z().x.toByteArray(), dc.Z().y.toByteArray(), dc.c(), dc.t())) {
+            System.out.println("Output file could not be written.");
+            return;
+        } else {
+            System.out.println("File written successfully: " + outputName + ".bin");
+        }
 
         iCurrentMenu = MAIN_MENU;
     }
@@ -407,7 +435,28 @@ public class UserInterface {
      * Encrypt terminal input using Schnorr/DHIES.
      */
     private static void sdEncryptFromInput() {
+        System.out.println("What should the output file be named:");
+        String outputName = TEIN.nextLine();
+        System.out.println("Source Text:");
+        byte[] sourceText = Util.ASCIIStringToBytes(TEIN.nextLine());
+        System.out.println("Source Public Key:");
+        String sourceKey = TEIN.nextLine();
 
+        byte[][][] sourceKeyContent = new byte[1][][];
+        if (!FileIO.readArraysFromFile(sourceKeyContent, sourceKey)) {
+            System.out.println("Key File could not be read.");
+            return;
+        }
+
+        DHIESCryptogram dc = Services.encryptAsymm(sourceText,
+                new Ed448GoldilocksPoint(sourceKeyContent[0][0], sourceKeyContent[0][1]));
+
+        if (!FileIO.writeArraysToFile(outputName, dc.Z().x.toByteArray(), dc.Z().y.toByteArray(), dc.c(), dc.t())) {
+            System.out.println("Output file could not be written.");
+            return;
+        } else {
+            System.out.println("File written successfully: " + outputName + ".bin");
+        }
 
         iCurrentMenu = MAIN_MENU;
     }
@@ -416,7 +465,37 @@ public class UserInterface {
      * Decrypt sd file from given passphrase and write to new file.
      */
     private static void sdDecryptHandler() {
+        System.out.println("What should the output file be named:");
+        String outputName = TEIN.nextLine();
+        System.out.println("Source File:");
+        String sourceFile = TEIN.nextLine();
+        System.out.println("Input Passphrase:");
+        String sourceKey = TEIN.nextLine();
 
+        byte[][][] sourceFileContent = new byte[1][][];
+        if (!FileIO.readArraysFromFile(sourceFileContent, sourceFile)) {
+            System.out.println("Content File could not be read.");
+            return;
+        }
+
+        Ed448GoldilocksPoint Z = new Ed448GoldilocksPoint(sourceFileContent[0][0], sourceFileContent[0][1]);
+        DHIESCryptogram dc = new DHIESCryptogram(Z, sourceFileContent[0][2], sourceFileContent[0][3]);
+
+        byte[][] mOut = new byte[1][];
+        if (Services.decryptAsymm(mOut, dc, Util.ASCIIStringToBytes(sourceKey))) {
+            System.out.println("Passphrase verified, content decrypted.");
+
+            if (!FileIO.writeToFile(mOut[0], outputName+".txt", false)) {
+                System.out.println("Output file could not be written.");
+                return;
+            } else {
+                System.out.println("File written successfully: " + outputName + ".bin");
+            }
+        } else {
+            System.out.println("Passphrase incorrect.");
+        }
+
+        iCurrentMenu = MAIN_MENU;
     }
 
     /**
@@ -472,7 +551,7 @@ public class UserInterface {
         String outputName = TEIN.nextLine();
         System.out.println("Text to sign:");
         byte[] sourceData = Util.ASCIIStringToBytes(TEIN.nextLine());
-        System.out.println("File to write text to, a .txt extension will be automatically added:");
+        System.out.println("File to write text to:");
         String sourceFile = TEIN.nextLine();
 
         if (!FileIO.writeToFile(sourceData, sourceFile + ".txt", false)) {

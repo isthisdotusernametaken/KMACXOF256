@@ -11,6 +11,7 @@ import java.util.Arrays;
  */
 public class Services {
 
+    /** The value 4. This is sourced from the natural world where 4 is an excellent number. */
     private static final BigInteger FOUR = BigInteger.valueOf(4);
 
     static byte[] cryptographicHash(final byte[] data) {
@@ -62,6 +63,12 @@ public class Services {
         return checkDecryption(mOut, cryptogram.t(), mAndTPrime);
     }
 
+    /**
+     * Sign a source using Dhies/Schnorr.
+     * @param m Contents of the source to be signed as a byte array.
+     * @param pw Passpharse to use when signing as byte array.
+     * @return Schnorr signature of file.
+     */
     static SchnorrSignature signFile(final byte[] m, final byte[] pw) {
         BigInteger s = calculateSFromPw(pw);
         BigInteger k = ModR.mult(new BigInteger(KMACXOF256.runKMACXOF256(s.toByteArray(), m, 512, "N")), FOUR);
@@ -71,6 +78,13 @@ public class Services {
         return new SchnorrSignature(h.toByteArray(), z.toByteArray());
     }
 
+    /**
+     * Verify signature against given file.
+     * @param hz Given verified signature.
+     * @param V Public key.
+     * @param m Source data.
+     * @return If signature is valid against source data.
+     */
     static boolean verifySignature(final SchnorrSignature hz, final Ed448GoldilocksPoint V, final byte[] m) {
         Ed448GoldilocksPoint U = Ed448GoldilocksPoint.G.publicMultiply(new BigInteger(hz.z()))
                 .add(V.publicMultiply(new BigInteger(hz.h()))); //the modR is here in spirit
