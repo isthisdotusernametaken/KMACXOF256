@@ -53,8 +53,8 @@ public class Services {
     }
 
     static boolean decryptAsymm(final byte[][] mOut, final DHIESCryptogram cryptogram, final byte[] pw) {
-        var s = calculateSFromPw(pw);
-        var W = cryptogram.Z().publicMultiply(s);
+        final var s = calculateSFromPw(pw);
+        final var W = cryptogram.Z().publicMultiply(s);
 
         final byte[][] mAndTPrime = cAndTOrMAndTPrimeAsymm(W.x, cryptogram.c(), false);
 
