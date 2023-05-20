@@ -485,11 +485,11 @@ public class UserInterface {
         if (Services.decryptAsymm(mOut, dc, Util.ASCIIStringToBytes(sourceKey))) {
             System.out.println("Passphrase verified, content decrypted.");
 
-            if (!FileIO.writeToFile(mOut[0], outputName+".txt", false)) {
+            if (!FileIO.writeToFile(mOut[0], outputName + ".txt", false)) {
                 System.out.println("Output file could not be written.");
                 return;
             } else {
-                System.out.println("File written successfully: " + outputName + ".bin");
+                System.out.println("File written successfully: " + outputName + ".txt");
             }
         } else {
             System.out.println("Passphrase incorrect.");
