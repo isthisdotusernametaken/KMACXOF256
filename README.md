@@ -9,11 +9,11 @@ This project implements KMACXOF256 for use of:
 * Decrypting a given symmetric cryptogram with a given passphrase.
 
 It also uses Dhies/Schnorr Signatures and Elliptic Curves using Ed448 Goldilocks Points for use of:
-* Computing Public/Private key pairs
-* Encrypting a file or console input.
-* Decrypting a file generated with this application.
-* Signing a file using a given passphrase and public key.
-* Verifying a signature generated with this application.
+* Computing Public/Private key pairs, writes both to files and encrypts private key using included KMACXOF256 functionality.
+* Encrypting a file or console input using provided public key file and writes encrypted content to file.
+* Decrypting a file generated with this application, using provided passphrase.
+* Signing a file or console input using a given passphrase and writes signature to file.
+* Verifying a signature file and source file using a given public key generated with this application.
 
 The details of each function and how to use this project are given below.
 
