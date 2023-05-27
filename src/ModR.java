@@ -20,7 +20,7 @@ public class ModR {
          return ModularArithmetic.mult(r, factors);
     }
 
-    static BigInteger getRandK() {
+    static BigInteger getRandScalar() {
         BigInteger res;
         do {
             // In office hours, we were informed that only 448 (instead of 512,

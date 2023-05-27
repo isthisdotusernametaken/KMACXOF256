@@ -97,7 +97,7 @@ public class TestValidity {
     private static boolean testrandK() {
         for (int i = 0; i < 10; i++) {
             //k * G = (k mod r) * G
-            BigInteger k = ModR.getRandK();
+            BigInteger k = ModR.getRandScalar();
 
             Ed448GoldilocksPoint kG = Ed448GoldilocksPoint.G.publicMultiply(k);
             Ed448GoldilocksPoint kmrG = Ed448GoldilocksPoint.G.publicMultiply(k);
