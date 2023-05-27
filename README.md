@@ -132,10 +132,10 @@ Group members are noted by their initials, JB: Joshua Barbee, JD: James Deal.
   * Functionality is from resource tiny_sha3.
   * Able to swap the endian of input and output for interaction with ShaObject. JB.
 * Ed448GoldilocksPoint
-  * Carries state for Ed448 points as well as functionality for manipulating these points. Can compare points for equality and output them as byte arrays for usage in Services.
+  * Carries state for Ed448 points as well as functionality for manipulating these points. Can compare points for equality and output them as byte arrays for usage in Services. JB.
 * ModularArithmetic
-  * Includes functionality for the more specific and complicated math operations required for Elliptic Curves using BigIntegers.
-  * Has two derived classes, ModP, and ModR, which are used as convenient shorthand in Services for modular arithmetic in these respective moduli.
+  * Includes functionality for the more specific and complicated math operations required for Elliptic Curves using BigIntegers. JB.
+  * Has two derived classes, ModP, and ModR, which are used as convenient shorthand in Services for modular arithmetic in these respective moduli. JB.
 ## Resources
 1. [Dr. Markku-Juhani O. Saarinen: tiny_sha3](https://github.com/mjosaarinen/tiny_sha3)
 2. [NIST Documentation: cSHAKE256 Test Vectors](https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/cSHAKE_samples.pdf)
