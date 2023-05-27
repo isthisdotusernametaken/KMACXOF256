@@ -92,6 +92,10 @@ public class Ed448GoldilocksPoint {
         );
     }
 
+    // To avoid information leakage, this multiplication method should be used
+    // only with public parameters if the provided security services are to be
+    // practically used. A multiplication algorithm without this leakage issue
+    // is not included in this (toy) implementation.
     Ed448GoldilocksPoint publicMultiply(final BigInteger scalar) {
         if (scalar.equals(BigInteger.ZERO))
             return O;

@@ -22,6 +22,7 @@ public class ModularArithmetic {
         return dividend.multiply(divisor.modInverse(mod)).mod(mod);
     }
 
+    // Taken directly from part 2 assignment description
     static BigInteger sqrt(final BigInteger mod, final BigInteger radicand, final boolean lsb) {
         if (radicand.signum() == 0)
             return BigInteger.ZERO;

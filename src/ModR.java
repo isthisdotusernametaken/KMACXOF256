@@ -23,6 +23,10 @@ public class ModR {
     static BigInteger getRandK() {
         BigInteger res;
         do {
+            // In office hours, we were informed that only 448 (instead of 512,
+            // as given in the services pseudocode in the assignment
+            // description) random bits are necessary here to meet the required
+            // security level
             res = new BigInteger(448, Util.RANDOM);
 
             if (res.signum() == -1)
