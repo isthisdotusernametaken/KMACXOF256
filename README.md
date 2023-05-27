@@ -62,23 +62,23 @@ Running the included functionality tests:
 
 <img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847474500485231/5test.png" alt="testing">
 
-Generating Schnorr/DHIES key pair.
+Generating Schnorr/DHIES key pair with filename "asynckey.bin" with passphrase "no".
 
 <img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847474747953172/6key.png" alt="key generate">
 
-Encrypting using Schnorr/DHIES.
+Encrypting a file named "README.md" as "asynce.bin" using Schnorr/DHIES and the key generated from above functionality.
 
 <img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847475033161728/7enc.png" alt="async encrypt">
 
-Decrypting using Schnorr/DHIES.
+Decrypting the "asynce.bin" file generated above as "asyncd" using Schnorr/DHIES and passphrase "no".
 
 <img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847475322572863/8dec.png" alt="async decrypt">
 
-Generate signature using Schnorr/DHIES.
+Generate signature file named "asyncs.bin" for file "vs.txt" using Schnorr/DHIES and passphrase "no".
 
 <img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847475586809997/9gsig.png" alt="signature generation">
 
-Verify signature using Schnorr/DHIES.
+Verify signature file "asyncs.bin" for file "vs.txt" using Schnorr/DHIES signature file "asyncs.bin" and key file "asynckey.bin".
 
 <img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847475939135535/10vsig.png" alt="signature verification">
 
