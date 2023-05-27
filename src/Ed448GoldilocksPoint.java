@@ -1,5 +1,9 @@
 import java.math.BigInteger;
 
+/**
+ * State and arithmatic for Ed448 Goldilocks Points.
+ * @author Joshua Barbee
+ */
 public class Ed448GoldilocksPoint {
 
     private static final BigInteger d = BigInteger.valueOf(-39081L);
@@ -8,7 +12,9 @@ public class Ed448GoldilocksPoint {
     static final Ed448GoldilocksPoint G = new Ed448GoldilocksPoint(BigInteger.valueOf(8L), false);
     static final Ed448GoldilocksPoint O = new Ed448GoldilocksPoint();
 
+    /** X value of Ed point. */
     final BigInteger x;
+    /** Y value of Ed point. */
     final BigInteger y;
 
     Ed448GoldilocksPoint(final BigInteger x, final BigInteger y) {
@@ -29,6 +35,12 @@ public class Ed448GoldilocksPoint {
         this(BigInteger.ZERO, BigInteger.ONE);
     }
 
+    /**
+     * Calculation of Y Ed448 point, logic constructed from provided documentation.
+     * @param x x coordinate of point.
+     * @param lsb least significant bit.
+     * @return y coordinate of point.
+     */
     private static BigInteger calculateY(final BigInteger x, final boolean lsb) {
         final BigInteger xSquared = ModP.mult(x, x);
 
@@ -48,6 +60,11 @@ public class Ed448GoldilocksPoint {
         return new Ed448GoldilocksPoint(x.negate(), y);
     }
 
+    /**
+     * Addition of two Ed448 points, logic constructed from provided documentation.
+     * @param addend second Ed448 point to add to this point.
+     * @return sum of points.
+     */
     Ed448GoldilocksPoint add(final Ed448GoldilocksPoint addend) {
         final BigInteger dX1X2Y1Y2 = ModP.mult(
                 d, x, addend.x, y, addend.y

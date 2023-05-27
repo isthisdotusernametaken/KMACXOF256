@@ -341,7 +341,7 @@ public class UserInterface {
         iCurrentMenu = MAIN_MENU;
     }
 
-    /** TODO beginning of new content
+    /**
      * Generates a Schnorr/DHIES key pair with a given passphrase.
      */
     private static void sdKeyGenerate() {
@@ -599,8 +599,6 @@ public class UserInterface {
             System.out.println("WARNING: Signature invalid.");
         }
     }
-
-    //TODO new content ends here
 
     /* Helper functions. */
 
