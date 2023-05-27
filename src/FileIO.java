@@ -38,11 +38,14 @@ public class FileIO {
     }
 
     static boolean writeArraysToFile(final String filename, final byte[]... arrays) {
-        long allowedBytesRemaining = MAX_FILE_SIZE_MINUS_ARR_CNT - (arrays.length * 4L);
+        long allowedBytesRemaining = MAX_FILE_SIZE_MINUS_ARR_CNT - (arrays.length * 4L); // 4 bytes per stored int
         for (var array : arrays) {
             allowedBytesRemaining -= array.length;
-            if (allowedBytesRemaining < 0)
-                throw new IllegalArgumentException(); // File would be larger than limit
+
+            if (allowedBytesRemaining < 0) { // File would be larger than limit
+                System.out.println("File could not be written (file too large).");
+                return false;
+            }
         }
 
         try (var output = new FileOutputStream(filename + ".bin")) {
@@ -61,9 +64,6 @@ public class FileIO {
                 output.write(array);
 
             return true;
-        } catch (IllegalArgumentException e) {
-            System.out.println("File could not be written (file too large).");
-            return false;
         } catch (IOException | SecurityException e) {
             System.out.println("File could not be written.");
             return false;

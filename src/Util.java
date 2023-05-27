@@ -103,7 +103,7 @@ public class Util {
         };
     }
 
-    static int toInt(final byte[] bytes) {
+    static int toInt(final byte[] bytes) throws IllegalArgumentException {
         if (bytes.length != 4)
             throw new IllegalArgumentException(
                     "4 bytes must be provided for an int"
