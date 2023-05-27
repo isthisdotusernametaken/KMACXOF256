@@ -8,11 +8,11 @@ This project implements KMACXOF256 for use of:
 * Encrypting a given file symmetrically with a given passphrase.
 * Decrypting a given symmetric cryptogram with a given passphrase.
 
-It also uses Dhies/Schnorr Signatures and Elliptic Curves using Ed448 Goldilocks Points for use of:
-* Computing Public/Private key pairs, writes both to files and encrypts private key using included KMACXOF256 functionality.
-* Encrypting a file or console input using provided public key file and writes encrypted content to file.
-* Decrypting a file generated with this application, using provided passphrase.
-* Signing a file or console input using a given passphrase and writes signature to file.
+It also uses DHIES/Schnorr Signatures and Elliptic Curves using Ed448 Goldilocks Points for use of:
+* Computing Public/Private key pairs from passphrases, writing each key (with the private key encrypted using the included KMACXOF256 functionality with the same given passphrase) to its own file.
+* Asymmetrically encrypting a file or console input using a specified public key file and writing the encrypted contents to a file.
+* Decrypting a file generated with this application, using the provided passphrase (so that the original private key can be calculated).
+* Signing a file or console input using a given passphrase and writing the signature to file.
 * Verifying a signature file and source file using a given public key generated with this application.
 
 The details of each function and how to use this project are given below.
@@ -29,7 +29,7 @@ From the main menu, select the MAC option, and then select the option for using 
 From the main menu, select the encryption option. Enter the path of the input file and then the immediate text of the passphrase as directed. Enter a name — possibly including a full filepath — for the cryptogram (a name not previously used for encryption, or the existing cryptogram with that name may be overwritten); this name will be used later for decryption. The application will save the resulting cryptogram as three separate files in the location specified by the cryptogram name.
 ### Decrypting a symmetric cryptogram with a given passphrase
 From the main menu, select the decryption option. Enter the exact same name that was provided for a cryptogram generated with the application's encryption mode. Enter the exact same passphrase provided when the cryptogram was created, and enter the path of the output file to be created. A message will be printed to the console to indicate whether the provided passphrase is correct for the specified cryptogram, and the decrypted data will be stored in the specified output file if the passphrase is correct.
-### Creating an Ellipc Key Pair with a given passphrase
+### Creating an Elliptic Key Pair with a given passphrase
 From the main menu, select the option to generate a Schnorr/DHIES key pair. Enter a desired passphrase and output filename, not including file extension. The public key will be written to a file named equal to what was desired, with a .bin extension. The private key will be encrypted using the included KMACXOF256 functionality and saved to a separate file.
 ### Encrypting using Schnorr/DHIES
 From the main menu, select the option to encrypt using Schnorr/DHIES. There is a sub-menu for deciding if the content to encrypt will come from a file or console input. The application will ask the user what the output file will be named, not including extension as this will always be .bin. If the source data is a file, the filename given must include the file extension. The location of the key file should be given without a file extension as it is expected it will always be a .bin. The encrypted data will be saved to a .bin file with the desired name provided.
