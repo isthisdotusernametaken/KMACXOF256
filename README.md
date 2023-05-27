@@ -60,7 +60,27 @@ Decrypting the above generated symmetric cryptogram to a file named "decoded.txt
 
 Running the included functionality tests:
 
-<img src="https://cdn.discordapp.com/attachments/149944536871731200/1099954410488086598/image.png" alt="testing">
+<img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847474500485231/5test.png" alt="testing">
+
+Generating Schnorr/DHIES key pair.
+
+<img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847474747953172/6key.png" alt="key generate">
+
+Encrypting using Schnorr/DHIES.
+
+<img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847475033161728/7enc.png" alt="async encrypt">
+
+Decrypting using Schnorr/DHIES.
+
+<img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847475322572863/8dec.png" alt="async decrypt">
+
+Generate signature using Schnorr/DHIES.
+
+<img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847475586809997/9gsig.png" alt="signature generation">
+
+Verify signature using Schnorr/DHIES.
+
+<img src="https://cdn.discordapp.com/attachments/149944536871731200/1111847475939135535/10vsig.png" alt="signature verification">
 
 ## Description of Project Structure
 This section describes each piece of functionality within the project listed per individual file present in project, and which group member worked on each given function. Each file's functionality is categorized by whether it is meant for user interaction/utility, or if it is core functionality to the cryptography itself.
