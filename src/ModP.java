@@ -1,5 +1,8 @@
 import java.math.BigInteger;
 
+/**
+ * @author Joshua Barbee
+ */
 public class ModP {
 
     static final BigInteger p = BigInteger.TWO.pow(448)

@@ -1,5 +1,8 @@
 import java.math.BigInteger;
 
+/**
+ * @author Joshua Barbee
+ */
 public class ModularArithmetic {
 
     static BigInteger add(final BigInteger mod, final BigInteger augend, final BigInteger addend) {
